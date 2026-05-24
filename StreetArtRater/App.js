@@ -2,49 +2,104 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onAuthStateChanged } from "firebase/auth";
+
 import { auth } from "./firebase";
 
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
-import MapScreen from "./screens/MapScreen";
+
+import HomeScreen from "./screens/HomeScreen";
 import AddArtScreen from "./screens/AddArtScreen";
-import DetailScreen from "./screens/DetailScreen";
 import ListScreen from "./screens/ListScreen";
+import DetailScreen from "./screens/DetailScreen";
+import TopRatedScreen from "./screens/TopRatedScreen";
+import MyStreetArtScreen from "./screens/MyStreetArtScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [user, setUser] = useState(null);
-  const [checkingUser, setCheckingUser] = useState(true);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setCheckingUser(false);
-    });
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setLoading(false);
+        });
 
-    return unsubscribe;
-  }, []);
+        return unsubscribe;
+    }, []);
 
-  if (checkingUser) return null;
+    if (loading) {
+        return null;
+    }
 
-  return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          {user ? (
-              <>
-                <Stack.Screen name="Map" component={MapScreen} />
-                <Stack.Screen name="AddArt" component={AddArtScreen} />
-                <Stack.Screen name="Detail" component={DetailScreen} />
-                <Stack.Screen name="List" component={ListScreen} />
-              </>
-          ) : (
-              <>
-                <Stack.Screen name="Login" component={LoginScreen} />
-                <Stack.Screen name="Signup" component={SignupScreen} />
-              </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-  );
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+
+                {user ? (
+                    <>
+                        <Stack.Screen
+                            name="Home"
+                            component={HomeScreen}
+                            options={{
+                                title: "Street Art",
+                            }}
+                        />
+
+                        <Stack.Screen
+                            name="AddArt"
+                            component={AddArtScreen}
+                            options={{
+                                title: "Add art",
+                            }}
+                        />
+
+                        <Stack.Screen
+                            name="List"
+                            component={ListScreen}
+                            options={{
+                                title: "List of street art",
+                            }}
+                        />
+
+                        <Stack.Screen
+                            name="Detail"
+                            component={DetailScreen}
+                            options={{
+                                title: "Details",
+                            }}
+                        />
+
+                        <Stack.Screen
+                            name="MyStreetArt"
+                            component={MyStreetArtScreen}
+                        />
+
+                        <Stack.Screen
+                            name="TopRated"
+                            component={TopRatedScreen}
+                            options={{
+                                title: "Highest rated",
+                            }}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <Stack.Screen
+                            name="Login"
+                            component={LoginScreen}
+                        />
+
+                        <Stack.Screen
+                            name="Signup"
+                            component={SignupScreen}
+                        />
+                    </>
+                )}
+
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
 }

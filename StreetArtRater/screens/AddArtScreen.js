@@ -1,237 +1,493 @@
 import React, { useState } from "react";
+
 import {
     View,
     Text,
     TextInput,
-    Button,
     Image,
+    ScrollView,
+    TouchableOpacity,
     StyleSheet,
     Alert,
-    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    ImageBackground,
 } from "react-native";
+
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import MapView, { Marker } from "react-native-maps";
-import { collection, addDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../firebase";
 
-export default function AddArtScreen({ navigation }) {
-    const [imageUri, setImageUri] = useState(null);
-    const [location, setLocation] = useState(null);
+import MapView, {
+    Marker,
+} from "react-native-maps";
 
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [rating, setRating] = useState("");
+import {
+    collection,
+    addDoc,
+} from "firebase/firestore";
 
-    async function takePicture() {
-        const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL,
+} from "firebase/storage";
 
-        if (!cameraPermission.granted) {
-            Alert.alert("Fejl", "Kamera tilladelse mangler");
+import {
+    db,
+    storage,
+    auth,
+} from "../firebase";
+
+export default function AddArtScreen({
+                                         navigation,
+                                     }) {
+
+    const [image, setImage] =
+        useState(null);
+
+    const [location, setLocation] =
+        useState(null);
+
+    const [title, setTitle] =
+        useState("");
+
+    const [description, setDescription] =
+        useState("");
+
+    const [rating, setRating] =
+        useState(0);
+
+    async function openCamera() {
+
+        const permission =
+            await ImagePicker.requestCameraPermissionsAsync();
+
+        if (!permission.granted) {
+            Alert.alert(
+                "Camera permission denied"
+            );
+
             return;
         }
 
-        const result = await ImagePicker.launchCameraAsync({
-            quality: 0.7,
-            allowsEditing: true,
-        });
+        const result =
+            await ImagePicker.launchCameraAsync({
+                allowsEditing:true,
+                quality:0.8,
+            });
 
         if (!result.canceled) {
-            setImageUri(result.assets[0].uri);
-            await useCurrentLocation();
+            setImage(
+                result.assets[0].uri
+            );
         }
+
     }
 
     async function pickImage() {
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        if (!permission.granted) {
-            Alert.alert("Fejl", "Tilladelse til billeder mangler");
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            quality: 0.7,
-            allowsEditing: true,
-        });
+        const result =
+            await ImagePicker.launchImageLibraryAsync({
+                allowsEditing:true,
+                quality:0.8,
+            });
 
         if (!result.canceled) {
-            setImageUri(result.assets[0].uri);
+            setImage(
+                result.assets[0].uri
+            );
         }
+
     }
 
     async function useCurrentLocation() {
-        const locationPermission =
+
+        const permission =
             await Location.requestForegroundPermissionsAsync();
 
-        if (!locationPermission.granted) {
-            Alert.alert("Fejl", "Location tilladelse mangler");
+        if (!permission.granted) {
             return;
         }
 
-        const currentLocation = await Location.getCurrentPositionAsync({});
-        setLocation(currentLocation.coords);
+        const current =
+            await Location.getCurrentPositionAsync();
+
+        setLocation({
+            latitude:
+            current.coords.latitude,
+
+            longitude:
+            current.coords.longitude,
+        });
+
     }
 
     async function uploadImage(uri) {
-        const response = await fetch(uri);
-        const blob = await response.blob();
 
-        const filename = `streetart/${Date.now()}.jpg`;
-        const imageRef = ref(storage, filename);
+        const response =
+            await fetch(uri);
 
-        await uploadBytes(imageRef, blob);
+        const blob =
+            await response.blob();
 
-        return await getDownloadURL(imageRef);
+        const storageRef =
+            ref(
+                storage,
+                `streetart/${Date.now()}.jpg`
+            );
+
+        await uploadBytes(
+            storageRef,
+            blob
+        );
+
+        return getDownloadURL(
+            storageRef
+        );
+
     }
 
     async function saveArt() {
-        if (!imageUri || !location || !title || !description || !rating) {
-            Alert.alert(
-                "Mangler data",
-                "Tilføj billede, punkt på kortet og alle tekstfelter"
-            );
-            return;
-        }
-
-        const ratingNumber = Number(rating);
-
-        if (ratingNumber < 1 || ratingNumber > 10) {
-            Alert.alert("Fejl", "Rating skal være mellem 1 og 10");
-            return;
-        }
 
         try {
-            const imageUrl = await uploadImage(imageUri);
 
-            await addDoc(collection(db, "streetart"), {
-                title,
-                description,
-                rating: ratingNumber,
-                imageUrl,
-                latitude: location.latitude,
-                longitude: location.longitude,
-                userId: auth.currentUser.uid,
-                createdAt: new Date(),
-            });
+            if (
+                !image ||
+                !location ||
+                !title ||
+                !description ||
+                !rating
+            ) {
+                Alert.alert(
+                    "Please fill all fields"
+                );
 
-            Alert.alert("Gemt", "Gadekunsten er gemt");
-            navigation.navigate("Map");
+                return;
+            }
+
+            const imageUrl =
+                await uploadImage(
+                    image
+                );
+
+            await addDoc(
+                collection(
+                    db,
+                    "streetart"
+                ),
+                {
+                    title,
+                    description,
+
+                    imageUrl,
+
+                    latitude:
+                    location.latitude,
+
+                    longitude:
+                    location.longitude,
+
+                    ratings:[
+                        rating
+                    ],
+
+                    averageRating:
+                    rating,
+
+                    userId:
+                    auth.currentUser.uid,
+
+                    createdBy:
+                    auth.currentUser.email,
+
+                    createdAt:
+                        new Date(),
+                }
+            );
+
+            Alert.alert(
+                "Saved"
+            );
+
+            navigation.goBack();
+
         } catch (error) {
-            Alert.alert("Fejl", error.message);
+
+            Alert.alert(
+                "Error",
+                error.message
+            );
+
         }
+
     }
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.heading}>Tilføj gadekunst</Text>
 
-            <Button title="Tag billede med kamera" onPress={takePicture} />
+        <ImageBackground
+            source={{
+                uri:
+                    "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fbc%2F0f%2F74%2Fbc0f74c07e3d1498ff8bb891f540f181.jpg&f=1&nofb=1&ipt=036c27621001646d2e5f5847791708b6a04857feecd34b2d55fe8f36f413d1c0",
+            }}
 
-            <View style={styles.space} />
+            style={styles.background}
+        >
 
-            <Button title="Upload billede fra galleri" onPress={pickImage} />
+            <View style={styles.overlay}>
 
-            <View style={styles.space} />
+                <KeyboardAvoidingView
+                    style={{ flex:1 }}
 
-            <Button title="Brug min nuværende position" onPress={useCurrentLocation} />
+                    behavior={
+                        Platform.OS === "ios"
+                            ? "padding"
+                            : "height"
+                    }
+                >
 
-            {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+                    <ScrollView>
 
-            <Text style={styles.label}>Vælg punkt manuelt på kortet:</Text>
+                        <Text style={styles.title}>
+                            Add Street Art
+                        </Text>
 
-            <MapView
-                style={styles.smallMap}
-                initialRegion={{
-                    latitude: 55.6761,
-                    longitude: 12.5683,
-                    latitudeDelta: 0.08,
-                    longitudeDelta: 0.08,
-                }}
-                onPress={(event) => {
-                    setLocation(event.nativeEvent.coordinate);
-                }}
-            >
-                {location && (
-                    <Marker
-                        coordinate={{
-                            latitude: location.latitude,
-                            longitude: location.longitude,
-                        }}
-                    />
-                )}
-            </MapView>
+                        <View style={styles.row}>
 
-            {location && (
-                <Text style={styles.locationText}>
-                    Valgt position: {location.latitude}, {location.longitude}
-                </Text>
-            )}
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={openCamera}
+                            >
+                                <Text>
+                                    📷 Camera
+                                </Text>
+                            </TouchableOpacity>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Titel"
-                value={title}
-                onChangeText={setTitle}
-            />
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={pickImage}
+                            >
+                                <Text>
+                                    🖼 Upload
+                                </Text>
+                            </TouchableOpacity>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Beskrivelse"
-                value={description}
-                onChangeText={setDescription}
-            />
+                        </View>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Rating 1-10"
-                value={rating}
-                onChangeText={setRating}
-                keyboardType="numeric"
-            />
+                        {image && (
+                            <Image
+                                source={{
+                                    uri:image
+                                }}
+                                style={styles.image}
+                            />
+                        )}
 
-            <Button title="Gem gadekunst" onPress={saveArt} />
-        </ScrollView>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={useCurrentLocation}
+                        >
+                            <Text>
+                                📍 Current location
+                            </Text>
+                        </TouchableOpacity>
+
+                        <MapView
+                            style={styles.map}
+
+                            onPress={(e)=>
+                                setLocation(
+                                    e.nativeEvent.coordinate
+                                )
+                            }
+                        >
+
+                            {location && (
+                                <Marker
+                                    coordinate={
+                                        location
+                                    }
+                                />
+                            )}
+
+                        </MapView>
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Title"
+                            value={title}
+                            onChangeText={setTitle}
+                        />
+
+                        <TextInput
+                            style={[
+                                styles.input,
+                                styles.description
+                            ]}
+
+                            placeholder="Description"
+
+                            value={description}
+
+                            onChangeText={
+                                setDescription
+                            }
+
+                            multiline
+                        />
+
+                        <View style={styles.stars}>
+
+                            {[1,2,3,4,5].map(
+                                (star)=>(
+
+                                    <TouchableOpacity
+                                        key={star}
+                                        onPress={() =>
+                                            setRating(star)
+                                        }
+                                    >
+
+                                        <Text style={styles.star}>
+                                            {
+                                                star <= rating
+                                                    ? "★"
+                                                    : "☆"
+                                            }
+                                        </Text>
+
+                                    </TouchableOpacity>
+
+                                )
+                            )}
+
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.save}
+                            onPress={saveArt}
+                        >
+                            <Text style={styles.saveText}>
+                                Save
+                            </Text>
+                        </TouchableOpacity>
+
+                    </ScrollView>
+
+                </KeyboardAvoidingView>
+
+            </View>
+
+        </ImageBackground>
+
     );
+
 }
 
-const styles = StyleSheet.create({
-    container: {
-        padding: 20,
-    },
-    heading: {
-        fontSize: 26,
-        fontWeight: "bold",
-        marginBottom: 20,
-    },
-    image: {
-        width: "100%",
-        height: 250,
-        marginVertical: 20,
-        borderRadius: 10,
-    },
-    smallMap: {
-        width: "100%",
-        height: 250,
-        marginVertical: 15,
-    },
-    label: {
-        marginTop: 20,
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-    locationText: {
-        marginBottom: 15,
-        fontSize: 12,
-    },
-    input: {
-        borderWidth: 1,
-        padding: 12,
-        marginBottom: 12,
-        borderRadius: 8,
-    },
-    space: {
-        height: 10,
-    },
-});
+const styles =
+    StyleSheet.create({
+
+        background:{
+            flex:1
+        },
+
+        overlay:{
+            flex:1,
+
+            padding:20,
+
+            backgroundColor:
+                "rgba(0,0,0,0.45)"
+        },
+
+        title:{
+            fontSize:40,
+
+            fontWeight:"800",
+
+            color:"#fff",
+
+            marginTop:50,
+
+            marginBottom:30
+        },
+
+        row:{
+            flexDirection:"row",
+            gap:10
+        },
+
+        button:{
+            flex:1,
+
+            backgroundColor:
+                "rgba(255,255,255,0.9)",
+
+            padding:16,
+
+            borderRadius:18,
+
+            alignItems:"center",
+
+            marginBottom:15
+        },
+
+        image:{
+            width:"100%",
+            height:250,
+
+            borderRadius:20,
+
+            marginBottom:15
+        },
+
+        map:{
+            height:240,
+
+            borderRadius:20,
+
+            marginBottom:20
+        },
+
+        input:{
+            backgroundColor:"#fff",
+
+            padding:18,
+
+            borderRadius:18,
+
+            marginBottom:15
+        },
+
+        description:{
+            minHeight:140,
+            textAlignVertical:"top"
+        },
+
+        stars:{
+            flexDirection:"row",
+            marginBottom:25
+        },
+
+        star:{
+            fontSize:42,
+            color:"#FFD60A"
+        },
+
+        save:{
+            backgroundColor:"#fff",
+
+            padding:20,
+
+            borderRadius:18,
+
+            alignItems:"center",
+
+            marginBottom:50
+        },
+
+        saveText:{
+            fontSize:18,
+            fontWeight:"700"
+        }
+
+    });
