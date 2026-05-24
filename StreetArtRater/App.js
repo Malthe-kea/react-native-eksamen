@@ -14,6 +14,7 @@ import ListScreen from "./screens/ListScreen";
 import DetailScreen from "./screens/DetailScreen";
 import TopRatedScreen from "./screens/TopRatedScreen";
 import MyStreetArtScreen from "./screens/MyStreetArtScreen";
+import MapScreen from "./screens/MapScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +37,11 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown:false,
+                }}
+            >
 
                 {user ? (
                     <>
@@ -75,6 +80,17 @@ export default function App() {
                         <Stack.Screen
                             name="MyStreetArt"
                             component={MyStreetArtScreen}
+                            options={{
+                                title: "My street art",
+                            }}
+                        />
+
+                        <Stack.Screen
+                            name="Map"
+                            component={MapScreen}
+                            options={{
+                                title: "Street Art Map",
+                            }}
                         />
 
                         <Stack.Screen

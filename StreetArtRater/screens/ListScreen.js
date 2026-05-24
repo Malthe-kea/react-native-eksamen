@@ -1,8 +1,4 @@
-import React, {
-    useEffect,
-    useState,
-} from "react";
-
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -12,392 +8,179 @@ import {
     StyleSheet,
     ImageBackground,
 } from "react-native";
-
-import MapView, {
-    Marker,
-} from "react-native-maps";
-
+import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
-import {
-    collection,
-    onSnapshot,
-} from "firebase/firestore";
-
-import {
-    db,
-} from "../firebase";
-
-export default function ListScreen({
-                                       navigation,
-                                   }) {
-
-    const [artworks, setArtworks] =
-        useState([]);
-
-    const [region, setRegion] =
-        useState(null);
+export default function ListScreen({ navigation }) {
+    const [artworks, setArtworks] = useState([]);
+    const [region, setRegion] = useState(null);
 
     useEffect(() => {
-
         loadLocation();
 
-        const unsubscribe =
-            onSnapshot(
-                collection(
-                    db,
-                    "streetart"
-                ),
-
-                (snapshot) => {
-
-                    setArtworks(
-                        snapshot.docs.map(
-                            (doc) => ({
-                                id: doc.id,
-                                ...doc.data(),
-                            })
-                        )
-                    );
-
-                }
-            );
+        const unsubscribe = onSnapshot(
+            collection(db, "streetart"),
+            (snapshot) => {
+                setArtworks(
+                    snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }))
+                );
+            }
+        );
 
         return unsubscribe;
-
     }, []);
 
     async function loadLocation() {
-
         const permission =
             await Location.requestForegroundPermissionsAsync();
 
-        if (!permission.granted) {
-            return;
-        }
+        if (!permission.granted) return;
 
         const current =
             await Location.getCurrentPositionAsync();
 
         setRegion({
-            latitude:
-            current.coords.latitude,
-
-            longitude:
-            current.coords.longitude,
-
-            latitudeDelta:
-                0.03,
-
-            longitudeDelta:
-                0.03,
+            latitude: current.coords.latitude,
+            longitude: current.coords.longitude,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
         });
-
     }
 
-    function stars(
-        rating
-    ) {
-
-        const value =
-            Math.round(
-                rating || 0
-            );
+    function stars(rating) {
+        const value = Math.round(rating || 0);
 
         return (
             "★".repeat(value) +
-            "☆".repeat(
-                5 - value
-            )
+            "☆".repeat(5 - value)
         );
-
     }
 
-    function openDetail(
-        art
-    ) {
-
-        navigation.navigate(
-            "Detail",
-            {
-                art,
-            }
-        );
-
+    function openDetail(art) {
+        navigation.navigate("Detail", { art });
     }
 
-    function renderItem({
-                            item,
-                        }) {
-
+    function renderItem({ item }) {
         return (
-
             <TouchableOpacity
-                style={
-                    styles.card
-                }
-
-                onPress={() =>
-                    openDetail(item)
-                }
+                style={styles.card}
+                onPress={() => openDetail(item)}
             >
-
                 <Image
-                    source={{
-                        uri:
-                        item.imageUrl,
-                    }}
-
-                    style={
-                        styles.image
-                    }
+                    source={{ uri: item.imageUrl }}
+                    style={styles.image}
                 />
 
-                <View
-                    style={
-                        styles.content
-                    }
-                >
-
-                    <Text
-                        style={
-                            styles.title
-                        }
-                    >
+                <View style={styles.content}>
+                    <Text style={styles.title}>
                         {item.title}
                     </Text>
 
-                    <Text
-                        style={
-                            styles.rating
-                        }
-                    >
-                        {stars(
-                            item.averageRating
-                        )}
+                    <Text style={styles.rating}>
+                        {stars(item.averageRating)}
                     </Text>
 
                     <Text
                         numberOfLines={2}
-
-                        style={
-                            styles.description
-                        }
+                        style={styles.description}
                     >
                         {item.description}
                     </Text>
-
                 </View>
-
             </TouchableOpacity>
-
         );
-
     }
 
     return (
-
         <ImageBackground
             source={{
-                uri:
-                    "https://images.unsplash.com/photo-1547891654-e66ed7ebb968",
+                uri: "https://images.unsplash.com/photo-1547891654-e66ed7ebb968",
             }}
-
-            style={
-                styles.background
-            }
+            style={styles.background}
         >
-
-            <View
-                style={
-                    styles.overlay
-                }
-            >
-                <MapView
-                    style={
-                        styles.map
-                    }
-
-                    region={
-                        region || {
-                            latitude:
-                                55.6761,
-
-                            longitude:
-                                12.5683,
-
-                            latitudeDelta:
-                                0.1,
-
-                            longitudeDelta:
-                                0.1,
-                        }
-                    }
-                >
-
-                    {artworks.map(
-                        (art) => (
-
-                            <Marker
-                                key={
-                                    art.id
-                                }
-
-                                coordinate={{
-                                    latitude:
-                                    art.latitude,
-
-                                    longitude:
-                                    art.longitude,
-                                }}
-
-                                title={
-                                    art.title
-                                }
-
-                                description={
-                                    `${(
-                                        art.averageRating ||
-                                        0
-                                    ).toFixed(
-                                        1
-                                    )}/5`
-                                }
-
-                                onPress={() =>
-                                    openDetail(
-                                        art
-                                    )
-                                }
-                            />
-
-                        )
-                    )}
-
-                </MapView>
-
+            <View style={styles.overlay}>
                 <FlatList
-                    data={
-                        artworks
-                    }
-
-                    renderItem={
-                        renderItem
-                    }
-
-                    keyExtractor={(
-                        item
-                    ) =>
-                        item.id
-                    }
-
-                    showsVerticalScrollIndicator={
-                        false
-                    }
+                    data={artworks}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    showsVerticalScrollIndicator={false}
                 />
-
             </View>
-
         </ImageBackground>
-
     );
-
 }
 
-const styles =
-    StyleSheet.create({
+const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+    },
 
-        background:{
-            flex:1
+    overlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.35)",
+        paddingTop: 60,
+    },
+
+    header: {
+        fontSize: 38,
+        fontWeight: "800",
+        color: "#fff",
+        paddingHorizontal: 20,
+        marginBottom: 20,
+    },
+
+    map: {
+        height: 280,
+        marginHorizontal: 20,
+        borderRadius: 22,
+        overflow: "hidden",
+        marginBottom: 10,
+    },
+
+    card: {
+        backgroundColor: "#fff",
+        marginHorizontal: 20,
+        marginVertical: 10,
+        borderRadius: 22,
+        overflow: "hidden",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
         },
+        shadowOpacity: 0.12,
+        shadowRadius: 10,
+        elevation: 5,
+    },
 
-        overlay:{
-            flex:1,
+    image: {
+        width: "100%",
+        height: 220,
+    },
 
-            backgroundColor:
-                "rgba(0,0,0,0.35)",
+    content: {
+        padding: 18,
+    },
 
-            paddingTop:60
-        },
+    title: {
+        fontSize: 24,
+        fontWeight: "700",
+        marginBottom: 8,
+    },
 
-        header:{
-            fontSize:38,
+    rating: {
+        fontSize: 22,
+        marginBottom: 8,
+    },
 
-            fontWeight:"800",
-
-            color:"#fff",
-
-            paddingHorizontal:20,
-
-            marginBottom:20
-        },
-
-        map:{
-            height:280,
-
-            marginHorizontal:20,
-
-            borderRadius:22,
-
-            overflow:"hidden",
-
-            marginBottom:10
-        },
-
-        card:{
-            backgroundColor:"#fff",
-
-            marginHorizontal:20,
-
-            marginVertical:10,
-
-            borderRadius:22,
-
-            overflow:"hidden",
-
-            shadowColor:"#000",
-
-            shadowOffset:{
-                width:0,
-                height:4
-            },
-
-            shadowOpacity:0.12,
-
-            shadowRadius:10,
-
-            elevation:5
-        },
-
-        image:{
-            width:"100%",
-            height:220
-        },
-
-        content:{
-            padding:18
-        },
-
-        title:{
-            fontSize:24,
-
-            fontWeight:"700",
-
-            marginBottom:8
-        },
-
-        rating:{
-            fontSize:22,
-
-            marginBottom:8
-        },
-
-        description:{
-            fontSize:16,
-
-            color:"#666",
-
-            lineHeight:24
-        }
-
-    });
+    description: {
+        fontSize: 16,
+        color: "#666",
+        lineHeight: 24,
+    },
+});

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import {
     View,
     Text,
@@ -180,7 +179,6 @@ export default function TopRatedScreen({
                     )
                 }
             >
-
                 <Image
                     source={{
                         uri:
@@ -196,7 +194,6 @@ export default function TopRatedScreen({
                         styles.content
                     }
                 >
-
                     <Text
                         style={
                             styles.title
@@ -225,9 +222,7 @@ export default function TopRatedScreen({
                         )}
                         km væk
                     </Text>
-
                 </View>
-
             </TouchableOpacity>
         );
     }
@@ -238,7 +233,6 @@ export default function TopRatedScreen({
                 styles.container
             }
         >
-
             <FlatList
                 data={
                     artworks
@@ -252,66 +246,59 @@ export default function TopRatedScreen({
                     renderItem
                 }
             />
-
         </View>
     );
 }
 
 const styles =
     StyleSheet.create({
-
-        container:{
-            flex:1,
-            backgroundColor:"#F5F5F5",
-            padding:16
+        container: {
+            flex: 1,
+            backgroundColor:
+                "#F5F5F5",
+            padding: 16,
         },
 
-        card:{
-            backgroundColor:"#fff",
-
-            marginBottom:20,
-
-            borderRadius:20,
-
-            overflow:"hidden",
-
-            shadowColor:"#000",
-
-            shadowOffset:{
-                width:0,
-                height:4
+        card: {
+            backgroundColor:
+                "#fff",
+            marginBottom: 20,
+            borderRadius: 20,
+            overflow: "hidden",
+            shadowColor:
+                "#000",
+            shadowOffset: {
+                width: 0,
+                height: 4,
             },
-
-            shadowOpacity:0.08,
-
-            shadowRadius:10,
-
-            elevation:4
+            shadowOpacity:
+                0.08,
+            shadowRadius: 10,
+            elevation: 4,
         },
 
-        image:{
-            width:"100%",
-            height:220
+        image: {
+            width: "100%",
+            height: 220,
         },
 
-        content:{
-            padding:16
+        content: {
+            padding: 16,
         },
 
-        title:{
-            fontSize:22,
-            fontWeight:"700",
-            marginBottom:8
+        title: {
+            fontSize: 22,
+            fontWeight: "700",
+            marginBottom: 8,
         },
 
-        rating:{
-            fontSize:22,
-            marginBottom:8
+        rating: {
+            fontSize: 22,
+            marginBottom: 8,
         },
 
-        distance:{
-            fontSize:16,
-            color:"#666"
-        }
-
+        distance: {
+            fontSize: 16,
+            color: "#666",
+        },
     });

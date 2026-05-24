@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
     ScrollView,
     View,
@@ -9,19 +8,16 @@ import {
     Alert,
     TouchableOpacity,
 } from "react-native";
-
 import {
     doc,
     deleteDoc,
 } from "firebase/firestore";
-
 import { db } from "../firebase";
 
 export default function DetailScreen({
                                          route,
                                          navigation,
                                      }) {
-
     const { art } =
         route.params;
 
@@ -40,9 +36,7 @@ export default function DetailScreen({
     }
 
     async function deleteArt() {
-
         try {
-
             await deleteDoc(
                 doc(
                     db,
@@ -59,28 +53,21 @@ export default function DetailScreen({
             navigation.navigate(
                 "Home"
             );
-
         } catch (error) {
-
             Alert.alert(
                 "Error",
                 error.message
             );
-
         }
-
     }
 
     return (
-
         <ScrollView
             style={styles.container}
         >
-
             <Image
                 source={{
-                    uri:
-                    art.imageUrl,
+                    uri: art.imageUrl,
                 }}
                 style={styles.image}
             />
@@ -88,7 +75,6 @@ export default function DetailScreen({
             <View
                 style={styles.content}
             >
-
                 <Text
                     style={styles.title}
                 >
@@ -100,8 +86,7 @@ export default function DetailScreen({
                 >
                     {stars(
                         art.averageRating
-                    )}
-                    {" "}
+                    )}{" "}
                     {(art.averageRating || 0)
                         .toFixed(1)}
                     /5
@@ -110,7 +95,6 @@ export default function DetailScreen({
                 <View
                     style={styles.card}
                 >
-
                     <Text
                         style={styles.heading}
                     >
@@ -122,13 +106,11 @@ export default function DetailScreen({
                     >
                         {art.description}
                     </Text>
-
                 </View>
 
                 <View
                     style={styles.card}
                 >
-
                     <Text
                         style={styles.heading}
                     >
@@ -138,18 +120,14 @@ export default function DetailScreen({
                     <Text
                         style={styles.text}
                     >
-                        {
-                            art.createdBy ||
-                            "Unknown"
-                        }
+                        {art.createdBy ||
+                            "Unknown"}
                     </Text>
-
                 </View>
 
                 <View
                     style={styles.card}
                 >
-
                     <Text
                         style={styles.heading}
                     >
@@ -159,19 +137,16 @@ export default function DetailScreen({
                     <Text
                         style={styles.text}
                     >
-                        Latitude:
-                        {" "}
+                        Latitude:{" "}
                         {art.latitude}
                     </Text>
 
                     <Text
                         style={styles.text}
                     >
-                        Longitude:
-                        {" "}
+                        Longitude:{" "}
                         {art.longitude}
                     </Text>
-
                 </View>
 
                 <TouchableOpacity
@@ -182,7 +157,6 @@ export default function DetailScreen({
                         deleteArt
                     }
                 >
-
                     <Text
                         style={
                             styles.deleteText
@@ -190,102 +164,80 @@ export default function DetailScreen({
                     >
                         Delete art
                     </Text>
-
                 </TouchableOpacity>
-
             </View>
-
         </ScrollView>
-
     );
-
 }
 
 const styles =
     StyleSheet.create({
-
-        container:{
-            flex:1,
-            backgroundColor:"#F5F5F5"
+        container: {
+            flex: 1,
+            backgroundColor:
+                "#F5F5F5",
         },
 
-        image:{
-            width:"100%",
-            height:320
+        image: {
+            width: "100%",
+            height: 320,
         },
 
-        content:{
-            padding:20
+        content: {
+            padding: 20,
         },
 
-        title:{
-            fontSize:30,
-            fontWeight:"700",
-            marginBottom:10
+        title: {
+            fontSize: 30,
+            fontWeight: "700",
+            marginBottom: 10,
         },
 
-        rating:{
-            fontSize:24,
-            marginBottom:20
+        rating: {
+            fontSize: 24,
+            marginBottom: 20,
         },
 
-        card:{
-            backgroundColor:"#fff",
-
-            borderRadius:18,
-
-            padding:18,
-
-            marginBottom:16,
-
-            shadowColor:"#000",
-
-            shadowOffset:{
-                width:0,
-                height:4
+        card: {
+            backgroundColor:
+                "#fff",
+            borderRadius: 18,
+            padding: 18,
+            marginBottom: 16,
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 4,
             },
-
-            shadowOpacity:0.08,
-
-            shadowRadius:10,
-
-            elevation:3
+            shadowOpacity: 0.08,
+            shadowRadius: 10,
+            elevation: 3,
         },
 
-        heading:{
-            fontSize:18,
-
-            fontWeight:"700",
-
-            marginBottom:10
+        heading: {
+            fontSize: 18,
+            fontWeight: "700",
+            marginBottom: 10,
         },
 
-        text:{
-            fontSize:16,
-
-            color:"#555",
-
-            lineHeight:24
+        text: {
+            fontSize: 16,
+            color: "#555",
+            lineHeight: 24,
         },
 
-        deleteButton:{
-            backgroundColor:"#D62828",
-
-            padding:18,
-
-            borderRadius:16,
-
-            alignItems:"center",
-
-            marginTop:10
+        deleteButton: {
+            backgroundColor:
+                "#D62828",
+            padding: 18,
+            borderRadius: 16,
+            alignItems: "center",
+            marginTop: 10,
         },
 
-        deleteText:{
-            color:"#fff",
-
-            fontWeight:"700",
-
-            fontSize:18
-        }
-
+        deleteText: {
+            color: "#fff",
+            fontWeight: "700",
+            fontSize: 18,
+        },
     });

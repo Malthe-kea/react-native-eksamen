@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
     View,
     Text,
@@ -7,28 +6,18 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from "react-native";
-
 import { signOut } from "firebase/auth";
-
 import { auth } from "../firebase";
 
-export default function HomeScreen({
-                                       navigation,
-                                   }) {
-
+export default function HomeScreen({ navigation }) {
     return (
-
         <ImageBackground
             source={{
-                uri:
-                    "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmetroselskabet.euwest01.umbraco.io%2Fmedia%2Fvbkn5uue%2Fnordvest-daniel-rasmussen.jpg%3Fwidth%3D1200%26height%3D600&f=1&nofb=1&ipt=23f0cb9aeb45993a140a492a588491fadc0bc750c4bbd641f3c9009827eba359",
+                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmetroselskabet.euwest01.umbraco.io%2Fmedia%2Fvbkn5uue%2Fnordvest-daniel-rasmussen.jpg%3Fwidth%3D1200%26height%3D600&f=1&nofb=1&ipt=23f0cb9aeb45993a140a492a588491fadc0bc750c4bbd641f3c9009827eba359",
             }}
-
             style={styles.background}
         >
-
             <View style={styles.overlay}>
-
                 <Text style={styles.title}>
                     World wide street art
                 </Text>
@@ -40,9 +29,7 @@ export default function HomeScreen({
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() =>
-                        navigation.navigate(
-                            "AddArt"
-                        )
+                        navigation.navigate("AddArt")
                     }
                 >
                     <Text style={styles.buttonText}>
@@ -53,9 +40,7 @@ export default function HomeScreen({
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() =>
-                        navigation.navigate(
-                            "List"
-                        )
+                        navigation.navigate("List")
                     }
                 >
                     <Text style={styles.buttonText}>
@@ -66,9 +51,7 @@ export default function HomeScreen({
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() =>
-                        navigation.navigate(
-                            "MyStreetArt"
-                        )
+                        navigation.navigate("MyStreetArt")
                     }
                 >
                     <Text style={styles.buttonText}>
@@ -79,9 +62,18 @@ export default function HomeScreen({
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() =>
-                        navigation.navigate(
-                            "TopRated"
-                        )
+                        navigation.navigate("Map")
+                    }
+                >
+                    <Text style={styles.buttonText}>
+                        Street Art Map
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() =>
+                        navigation.navigate("TopRated")
                     }
                 >
                     <Text style={styles.buttonText}>
@@ -99,88 +91,59 @@ export default function HomeScreen({
                         Log out
                     </Text>
                 </TouchableOpacity>
-
             </View>
-
         </ImageBackground>
-
     );
-
 }
 
-const styles =
-    StyleSheet.create({
+const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+    },
 
-        background:{
-            flex:1
-        },
+    overlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.45)",
+        justifyContent: "center",
+        padding: 30,
+    },
 
-        overlay:{
-            flex:1,
+    title: {
+        fontSize: 48,
+        fontWeight: "800",
+        color: "#fff",
+        marginBottom: 10,
+    },
 
-            backgroundColor:
-                "rgba(0,0,0,0.45)",
+    subtitle: {
+        fontSize: 18,
+        color: "#ddd",
+        marginBottom: 60,
+    },
 
-            justifyContent:
-                "center",
+    button: {
+        backgroundColor: "rgba(255,255,255,0.15)",
+        padding: 22,
+        borderRadius: 18,
+        marginBottom: 18,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.2)",
+    },
 
-            padding:30
-        },
+    buttonText: {
+        fontSize: 20,
+        color: "#fff",
+        fontWeight: "700",
+        textAlign: "center",
+    },
 
-        title:{
-            fontSize:48,
+    logout: {
+        marginTop: 40,
+        alignItems: "center",
+    },
 
-            fontWeight:"800",
-
-            color:"#fff",
-
-            marginBottom:10
-        },
-
-        subtitle:{
-            fontSize:18,
-
-            color:"#ddd",
-
-            marginBottom:60
-        },
-
-        button:{
-            backgroundColor:
-                "rgba(255,255,255,0.15)",
-
-            padding:22,
-
-            borderRadius:18,
-
-            marginBottom:18,
-
-            borderWidth:1,
-
-            borderColor:
-                "rgba(255,255,255,0.2)"
-        },
-
-        buttonText:{
-            fontSize:20,
-
-            color:"#fff",
-
-            fontWeight:"700",
-
-            textAlign:"center"
-        },
-
-        logout:{
-            marginTop:40,
-
-            alignItems:"center"
-        },
-
-        logoutText:{
-            color:"#fff",
-
-            fontSize:18
-        }
-
-    });
+    logoutText: {
+        color: "#fff",
+        fontSize: 18,
+    },
+});
