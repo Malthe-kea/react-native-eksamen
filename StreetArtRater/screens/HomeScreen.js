@@ -83,9 +83,7 @@ export default function HomeScreen({ navigation }) {
 
                 <TouchableOpacity
                     style={styles.logout}
-                    onPress={() =>
-                        signOut(auth)
-                    }
+                    onPress={() => signOut(auth)}
                 >
                     <Text style={styles.logoutText}>
                         Log out
@@ -103,9 +101,9 @@ const styles = StyleSheet.create({
 
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.45)",
         justifyContent: "center",
         padding: 30,
+        backgroundColor: "rgba(0,0,0,0.45)",
     },
 
     title: {

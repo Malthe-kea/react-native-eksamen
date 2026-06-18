@@ -55,8 +55,7 @@ export default function MapScreen({ navigation }) {
     }
 
     function stars(rating) {
-        const value =
-            Math.round(rating || 0);
+        const value = Math.round(rating || 0);
 
         return (
             "★".repeat(value) +
@@ -90,9 +89,7 @@ export default function MapScreen({ navigation }) {
                                 latitude: art.latitude,
                                 longitude: art.longitude,
                             }}
-                            onPress={() =>
-                                setSelectedArt(art)
-                            }
+                            onPress={() => setSelectedArt(art)}
                         />
                     ))}
                 </MapView>
@@ -101,18 +98,14 @@ export default function MapScreen({ navigation }) {
                     <TouchableOpacity
                         style={styles.card}
                         onPress={() =>
-                            navigation.navigate(
-                                "Detail",
-                                {
-                                    art: selectedArt,
-                                }
-                            )
+                            navigation.navigate("Detail", {
+                                art: selectedArt,
+                            })
                         }
                     >
                         <Image
                             source={{
-                                uri:
-                                selectedArt.imageUrl,
+                                uri: selectedArt.imageUrl,
                             }}
                             style={styles.image}
                         />
@@ -123,9 +116,7 @@ export default function MapScreen({ navigation }) {
                             </Text>
 
                             <Text style={styles.rating}>
-                                {stars(
-                                    selectedArt.averageRating
-                                )}
+                                {stars(selectedArt.averageRating)}
                             </Text>
 
                             <Text

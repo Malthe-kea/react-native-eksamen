@@ -39,7 +39,9 @@ export default function ListScreen({ navigation }) {
         const permission =
             await Location.requestForegroundPermissionsAsync();
 
-        if (!permission.granted) return;
+        if (!permission.granted) {
+            return;
+        }
 
         const current =
             await Location.getCurrentPositionAsync();
@@ -86,8 +88,8 @@ export default function ListScreen({ navigation }) {
                     </Text>
 
                     <Text
-                        numberOfLines={2}
                         style={styles.description}
+                        numberOfLines={2}
                     >
                         {item.description}
                     </Text>
@@ -137,9 +139,9 @@ const styles = StyleSheet.create({
     map: {
         height: 280,
         marginHorizontal: 20,
+        marginBottom: 10,
         borderRadius: 22,
         overflow: "hidden",
-        marginBottom: 10,
     },
 
     card: {

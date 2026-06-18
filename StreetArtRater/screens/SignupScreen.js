@@ -11,22 +11,12 @@ import {
     Platform,
 } from "react-native";
 
-import {
-    createUserWithEmailAndPassword,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
-import {
-    auth,
-} from "../firebase";
-
-export default function SignupScreen({
-                                         navigation,
-                                     }) {
-    const [email, setEmail] =
-        useState("");
-
-    const [password, setPassword] =
-        useState("");
+export default function SignupScreen({ navigation }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     async function signup() {
         try {
@@ -48,94 +38,52 @@ export default function SignupScreen({
             source={{
                 uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fbarbarapicci.files.wordpress.com%2F2022%2F10%2Fstine-hvid-40-copenhagen-denmark.jpg%3Fw%3D1300&f=1&nofb=1&ipt=3db4065a0ae96728da9440e544dddbf04c533c584f78a05ee591e0615191638c",
             }}
-            style={
-                styles.background
-            }
+            style={styles.background}
         >
-            <View
-                style={
-                    styles.overlay
-                }
-            >
+            <View style={styles.overlay}>
                 <KeyboardAvoidingView
-                    behavior={
-                        Platform.OS === "ios"
-                            ? "padding"
-                            : "height"
-                    }
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
                 >
-                    <Text
-                        style={
-                            styles.title
-                        }
-                    >
+                    <Text style={styles.title}>
                         Create account
                     </Text>
 
-                    <Text
-                        style={
-                            styles.subtitle
-                        }
-                    >
+                    <Text style={styles.subtitle}>
                         Join the StreetArt community
                     </Text>
 
                     <TextInput
-                        style={
-                            styles.input
-                        }
+                        style={styles.input}
                         placeholder="Email"
                         placeholderTextColor="#bbb"
                         value={email}
-                        onChangeText={
-                            setEmail
-                        }
+                        onChangeText={setEmail}
                         autoCapitalize="none"
                     />
 
                     <TextInput
-                        style={
-                            styles.input
-                        }
+                        style={styles.input}
                         placeholder="Password"
                         placeholderTextColor="#bbb"
                         value={password}
-                        onChangeText={
-                            setPassword
-                        }
+                        onChangeText={setPassword}
                         secureTextEntry
                     />
 
                     <TouchableOpacity
-                        style={
-                            styles.button
-                        }
-                        onPress={
-                            signup
-                        }
+                        style={styles.button}
+                        onPress={signup}
                     >
-                        <Text
-                            style={
-                                styles.buttonText
-                            }
-                        >
+                        <Text style={styles.buttonText}>
                             Create account
                         </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={
-                            styles.secondary
-                        }
-                        onPress={() =>
-                            navigation.goBack()
-                        }
+                        style={styles.secondary}
+                        onPress={() => navigation.goBack()}
                     >
-                        <Text
-                            style={
-                                styles.secondaryText
-                            }
-                        >
+                        <Text style={styles.secondaryText}>
                             Already have an account?
                         </Text>
                     </TouchableOpacity>
@@ -145,65 +93,61 @@ export default function SignupScreen({
     );
 }
 
-const styles =
-    StyleSheet.create({
-        background: {
-            flex: 1,
-        },
+const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+    },
 
-        overlay: {
-            flex: 1,
-            justifyContent: "center",
-            padding: 30,
-            backgroundColor:
-                "rgba(0,0,0,0.45)",
-        },
+    overlay: {
+        flex: 1,
+        justifyContent: "center",
+        padding: 30,
+        backgroundColor: "rgba(0,0,0,0.45)",
+    },
 
-        title: {
-            fontSize: 42,
-            fontWeight: "800",
-            color: "#fff",
-            marginBottom: 8,
-        },
+    title: {
+        fontSize: 42,
+        fontWeight: "800",
+        color: "#fff",
+        marginBottom: 8,
+    },
 
-        subtitle: {
-            fontSize: 18,
-            color: "#ddd",
-            marginBottom: 40,
-        },
+    subtitle: {
+        fontSize: 18,
+        color: "#ddd",
+        marginBottom: 40,
+    },
 
-        input: {
-            backgroundColor:
-                "rgba(255,255,255,0.15)",
-            padding: 18,
-            borderRadius: 16,
-            marginBottom: 15,
-            color: "#fff",
-            borderWidth: 1,
-            borderColor:
-                "rgba(255,255,255,0.2)",
-        },
+    input: {
+        backgroundColor: "rgba(255,255,255,0.15)",
+        padding: 18,
+        borderRadius: 16,
+        marginBottom: 15,
+        color: "#fff",
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.2)",
+    },
 
-        button: {
-            backgroundColor: "#fff",
-            padding: 18,
-            borderRadius: 18,
-            alignItems: "center",
-            marginTop: 10,
-        },
+    button: {
+        backgroundColor: "#fff",
+        padding: 18,
+        borderRadius: 18,
+        alignItems: "center",
+        marginTop: 10,
+    },
 
-        buttonText: {
-            fontSize: 18,
-            fontWeight: "700",
-        },
+    buttonText: {
+        fontSize: 18,
+        fontWeight: "700",
+    },
 
-        secondary: {
-            marginTop: 20,
-            alignItems: "center",
-        },
+    secondary: {
+        marginTop: 20,
+        alignItems: "center",
+    },
 
-        secondaryText: {
-            color: "#fff",
-            fontSize: 16,
-        },
-    });
+    secondaryText: {
+        color: "#fff",
+        fontSize: 16,
+    },
+});

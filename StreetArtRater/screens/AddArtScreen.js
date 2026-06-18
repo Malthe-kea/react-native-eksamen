@@ -18,10 +18,7 @@ import * as Location from "expo-location";
 
 import MapView, { Marker } from "react-native-maps";
 
-import {
-    collection,
-    addDoc,
-} from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
 import {
     ref,
@@ -35,33 +32,19 @@ import {
     auth,
 } from "../firebase";
 
-export default function AddArtScreen({
-                                         navigation,
-                                     }) {
-    const [image, setImage] =
-        useState(null);
-
-    const [location, setLocation] =
-        useState(null);
-
-    const [title, setTitle] =
-        useState("");
-
-    const [description, setDescription] =
-        useState("");
-
-    const [rating, setRating] =
-        useState(0);
+export default function AddArtScreen({ navigation }) {
+    const [image, setImage] = useState(null);
+    const [location, setLocation] = useState(null);
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [rating, setRating] = useState(0);
 
     async function openCamera() {
         const permission =
             await ImagePicker.requestCameraPermissionsAsync();
 
         if (!permission.granted) {
-            Alert.alert(
-                "Camera permission denied"
-            );
-
+            Alert.alert("Camera permission denied");
             return;
         }
 
@@ -72,9 +55,7 @@ export default function AddArtScreen({
             });
 
         if (!result.canceled) {
-            setImage(
-                result.assets[0].uri
-            );
+            setImage(result.assets[0].uri);
         }
     }
 
@@ -86,9 +67,7 @@ export default function AddArtScreen({
             });
 
         if (!result.canceled) {
-            setImage(
-                result.assets[0].uri
-            );
+            setImage(result.assets[0].uri);
         }
     }
 
@@ -104,35 +83,23 @@ export default function AddArtScreen({
             await Location.getCurrentPositionAsync();
 
         setLocation({
-            latitude:
-            current.coords.latitude,
-
-            longitude:
-            current.coords.longitude,
+            latitude: current.coords.latitude,
+            longitude: current.coords.longitude,
         });
     }
 
     async function uploadImage(uri) {
-        const response =
-            await fetch(uri);
+        const response = await fetch(uri);
+        const blob = await response.blob();
 
-        const blob =
-            await response.blob();
-
-        const storageRef =
-            ref(
-                storage,
-                `streetart/${Date.now()}.jpg`
-            );
-
-        await uploadBytes(
-            storageRef,
-            blob
+        const storageRef = ref(
+            storage,
+            `streetart/${Date.now()}.jpg`
         );
 
-        return getDownloadURL(
-            storageRef
-        );
+        await uploadBytes(storageRef, blob);
+
+        return getDownloadURL(storageRef);
     }
 
     async function saveArt() {
@@ -144,10 +111,7 @@ export default function AddArtScreen({
                 !description ||
                 !rating
             ) {
-                Alert.alert(
-                    "Please fill all fields"
-                );
-
+                Alert.alert("Please fill all fields");
                 return;
             }
 
@@ -155,39 +119,23 @@ export default function AddArtScreen({
                 await uploadImage(image);
 
             await addDoc(
-                collection(
-                    db,
-                    "streetart"
-                ),
+                collection(db, "streetart"),
                 {
                     title,
                     description,
                     imageUrl,
-
-                    latitude:
-                    location.latitude,
-
-                    longitude:
-                    location.longitude,
-
+                    latitude: location.latitude,
+                    longitude: location.longitude,
                     ratings: [rating],
-
-                    averageRating:
-                    rating,
-
-                    userId:
-                    auth.currentUser.uid,
-
+                    averageRating: rating,
+                    userId: auth.currentUser.uid,
                     createdBy:
                     auth.currentUser.email,
-
-                    createdAt:
-                        new Date(),
+                    createdAt: new Date(),
                 }
             );
 
             Alert.alert("Saved");
-
             navigation.goBack();
         } catch (error) {
             Alert.alert(
@@ -223,26 +171,20 @@ export default function AddArtScreen({
                                 style={styles.button}
                                 onPress={openCamera}
                             >
-                                <Text>
-                                    📷 Camera
-                                </Text>
+                                <Text>📷 Camera</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={pickImage}
                             >
-                                <Text>
-                                    🖼 Upload
-                                </Text>
+                                <Text>🖼 Upload</Text>
                             </TouchableOpacity>
                         </View>
 
                         {image && (
                             <Image
-                                source={{
-                                    uri: image,
-                                }}
+                                source={{ uri: image }}
                                 style={styles.image}
                             />
                         )}
@@ -262,7 +204,8 @@ export default function AddArtScreen({
                             style={styles.map}
                             onPress={(e) =>
                                 setLocation(
-                                    e.nativeEvent.coordinate
+                                    e.nativeEvent
+                                        .coordinate
                                 )
                             }
                         >
@@ -301,13 +244,18 @@ export default function AddArtScreen({
                                     <TouchableOpacity
                                         key={star}
                                         onPress={() =>
-                                            setRating(star)
+                                            setRating(
+                                                star
+                                            )
                                         }
                                     >
                                         <Text
-                                            style={styles.star}
+                                            style={
+                                                styles.star
+                                            }
                                         >
-                                            {star <= rating
+                                            {star <=
+                                            rating
                                                 ? "★"
                                                 : "☆"}
                                         </Text>
