@@ -15,22 +15,12 @@ import {
 
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-
 import MapView, { Marker } from "react-native-maps";
 
 import { collection, addDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-import {
-    ref,
-    uploadBytes,
-    getDownloadURL,
-} from "firebase/storage";
-
-import {
-    db,
-    storage,
-    auth,
-} from "../firebase";
+import { db, storage, auth } from "../firebase";
 
 export default function AddArtScreen({ navigation }) {
     const [image, setImage] = useState(null);
@@ -40,19 +30,17 @@ export default function AddArtScreen({ navigation }) {
     const [rating, setRating] = useState(0);
 
     async function openCamera() {
-        const permission =
-            await ImagePicker.requestCameraPermissionsAsync();
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
 
         if (!permission.granted) {
             Alert.alert("Camera permission denied");
             return;
         }
 
-        const result =
-            await ImagePicker.launchCameraAsync({
-                allowsEditing: true,
-                quality: 0.8,
-            });
+        const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            quality: 0.8,
+        });
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
@@ -60,11 +48,10 @@ export default function AddArtScreen({ navigation }) {
     }
 
     async function pickImage() {
-        const result =
-            await ImagePicker.launchImageLibraryAsync({
-                allowsEditing: true,
-                quality: 0.8,
-            });
+        const result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            quality: 0.8,
+        });
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
@@ -72,15 +59,11 @@ export default function AddArtScreen({ navigation }) {
     }
 
     async function useCurrentLocation() {
-        const permission =
-            await Location.requestForegroundPermissionsAsync();
+        const permission = await Location.requestForegroundPermissionsAsync();
 
-        if (!permission.granted) {
-            return;
-        }
+        if (!permission.granted) return;
 
-        const current =
-            await Location.getCurrentPositionAsync();
+        const current = await Location.getCurrentPositionAsync();
 
         setLocation({
             latitude: current.coords.latitude,
@@ -92,10 +75,7 @@ export default function AddArtScreen({ navigation }) {
         const response = await fetch(uri);
         const blob = await response.blob();
 
-        const storageRef = ref(
-            storage,
-            `streetart/${Date.now()}.jpg`
-        );
+        const storageRef = ref(storage, `streetart/${Date.now()}.jpg`);
 
         await uploadBytes(storageRef, blob);
 
@@ -104,44 +84,30 @@ export default function AddArtScreen({ navigation }) {
 
     async function saveArt() {
         try {
-            if (
-                !image ||
-                !location ||
-                !title ||
-                !description ||
-                !rating
-            ) {
+            if (!image || !location || !title || !description || !rating) {
                 Alert.alert("Please fill all fields");
                 return;
             }
 
-            const imageUrl =
-                await uploadImage(image);
+            const imageUrl = await uploadImage(image);
 
-            await addDoc(
-                collection(db, "streetart"),
-                {
-                    title,
-                    description,
-                    imageUrl,
-                    latitude: location.latitude,
-                    longitude: location.longitude,
-                    ratings: [rating],
-                    averageRating: rating,
-                    userId: auth.currentUser.uid,
-                    createdBy:
-                    auth.currentUser.email,
-                    createdAt: new Date(),
-                }
-            );
+            await addDoc(collection(db, "streetart"), {
+                title,
+                description,
+                imageUrl,
+                latitude: location.latitude,
+                longitude: location.longitude,
+                ratings: [rating],
+                averageRating: rating,
+                userId: auth.currentUser.uid,
+                createdBy: auth.currentUser.email,
+                createdAt: new Date(),
+            });
 
             Alert.alert("Saved");
             navigation.goBack();
         } catch (error) {
-            Alert.alert(
-                "Error",
-                error.message
-            );
+            Alert.alert("Error", error.message);
         }
     }
 
@@ -155,16 +121,10 @@ export default function AddArtScreen({ navigation }) {
             <View style={styles.overlay}>
                 <KeyboardAvoidingView
                     style={{ flex: 1 }}
-                    behavior={
-                        Platform.OS === "ios"
-                            ? "padding"
-                            : "height"
-                    }
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
                 >
                     <ScrollView>
-                        <Text style={styles.title}>
-                            Add Street Art
-                        </Text>
+                        <Text style={styles.title}>Add Street Art</Text>
 
                         <View style={styles.row}>
                             <TouchableOpacity
@@ -183,38 +143,24 @@ export default function AddArtScreen({ navigation }) {
                         </View>
 
                         {image && (
-                            <Image
-                                source={{ uri: image }}
-                                style={styles.image}
-                            />
+                            <Image source={{ uri: image }} style={styles.image} />
                         )}
 
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={
-                                useCurrentLocation
-                            }
+                            onPress={useCurrentLocation}
                         >
-                            <Text>
-                                📍 Current location
-                            </Text>
+                            <Text>📍 Current location</Text>
                         </TouchableOpacity>
 
                         <MapView
                             style={styles.map}
                             onPress={(e) =>
-                                setLocation(
-                                    e.nativeEvent
-                                        .coordinate
-                                )
+                                setLocation(e.nativeEvent.coordinate)
                             }
                         >
                             {location && (
-                                <Marker
-                                    coordinate={
-                                        location
-                                    }
-                                />
+                                <Marker coordinate={location} />
                             )}
                         </MapView>
 
@@ -226,55 +172,31 @@ export default function AddArtScreen({ navigation }) {
                         />
 
                         <TextInput
-                            style={[
-                                styles.input,
-                                styles.description,
-                            ]}
+                            style={[styles.input, styles.description]}
                             placeholder="Description"
                             value={description}
-                            onChangeText={
-                                setDescription
-                            }
+                            onChangeText={setDescription}
                             multiline
                         />
 
                         <View style={styles.stars}>
-                            {[1, 2, 3, 4, 5].map(
-                                (star) => (
-                                    <TouchableOpacity
-                                        key={star}
-                                        onPress={() =>
-                                            setRating(
-                                                star
-                                            )
-                                        }
-                                    >
-                                        <Text
-                                            style={
-                                                styles.star
-                                            }
-                                        >
-                                            {star <=
-                                            rating
-                                                ? "★"
-                                                : "☆"}
-                                        </Text>
-                                    </TouchableOpacity>
-                                )
-                            )}
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <TouchableOpacity
+                                    key={star}
+                                    onPress={() => setRating(star)}
+                                >
+                                    <Text style={styles.star}>
+                                        {star <= rating ? "★" : "☆"}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
 
                         <TouchableOpacity
                             style={styles.save}
                             onPress={saveArt}
                         >
-                            <Text
-                                style={
-                                    styles.saveText
-                                }
-                            >
-                                Save
-                            </Text>
+                            <Text style={styles.saveText}>Save</Text>
                         </TouchableOpacity>
                     </ScrollView>
                 </KeyboardAvoidingView>
@@ -291,8 +213,7 @@ const styles = StyleSheet.create({
     overlay: {
         flex: 1,
         padding: 20,
-        backgroundColor:
-            "rgba(0,0,0,0.45)",
+        backgroundColor: "rgba(0,0,0,0.45)",
     },
 
     title: {
@@ -310,8 +231,7 @@ const styles = StyleSheet.create({
 
     button: {
         flex: 1,
-        backgroundColor:
-            "rgba(255,255,255,0.9)",
+        backgroundColor: "rgba(255,255,255,0.9)",
         padding: 16,
         borderRadius: 18,
         alignItems: "center",
