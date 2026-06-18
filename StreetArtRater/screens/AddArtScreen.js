@@ -150,7 +150,7 @@ export default function AddArtScreen({ navigation }) {
                             style={styles.button}
                             onPress={useCurrentLocation}
                         >
-                            <Text>📍 Current location</Text>
+                            <Text>Current location</Text>
                         </TouchableOpacity>
 
                         <MapView
