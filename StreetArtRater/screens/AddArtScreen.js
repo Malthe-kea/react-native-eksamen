@@ -71,8 +71,8 @@ export default function AddArtScreen({ navigation }) {
         });
     }
 
-    async function uploadImage(uri) {
-        const response = await fetch(uri);
+    async function uploadImage(PictureToUpload) {
+        const response = await fetch(PictureToUpload);
         const blob = await response.blob();
 
         const storageRef = ref(storage, `streetart/${Date.now()}.jpg`);
@@ -113,9 +113,7 @@ export default function AddArtScreen({ navigation }) {
 
     return (
         <ImageBackground
-            source={{
-                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fbc%2F0f%2F74%2Fbc0f74c07e3d1498ff8bb891f540f181.jpg&f=1&nofb=1&ipt=036c27621001646d2e5f5847791708b6a04857feecd34b2d55fe8f36f413d1c0",
-            }}
+            source={require("../static/pics/WP1.png")}
             style={styles.background}
         >
             <View style={styles.overlay}>
