@@ -16,6 +16,12 @@ export default function HomeScreen({ navigation }) {
             style={styles.background}
         >
             <View style={styles.overlay}>
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    onPress={() => signOut(auth)}
+                >
+                    <Text style={styles.logoutText}>Log ud</Text>
+                </TouchableOpacity>
                 <Text style={styles.title}>
                     World wide street art
                 </Text>
@@ -53,13 +59,20 @@ const styles = StyleSheet.create({
         marginBottom: 60,
     },
 
-    logout: {
-        marginTop: 40,
-        alignItems: "center",
+    logoutButton: {
+        position: "absolute",
+        top: 60,
+        right: 20,
+        backgroundColor: "#1E1E1E",
+        borderWidth: 2,
+        borderColor: "#ff6600",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
     },
 
     logoutText: {
-        color: "#fff",
-        fontSize: 18,
+        color: "#ff6600",
+        fontWeight: "700",
     },
 });

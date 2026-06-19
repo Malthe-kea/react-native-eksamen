@@ -6,12 +6,12 @@ import { signOut } from "firebase/auth";
 
 import { auth } from "./firebase";
 
-import HomeScreen from "./screens/HomeScreen.js";
-import AddArtScreen from "./screens/AddArtScreen.js";
-import ListScreen from "./screens/ListScreen.js";
-import MyStreetArtScreen from "./screens/MyStreetArtScreen.js";
-import MapScreen from "./screens/MapScreen.js";
-import TopRatedScreen from "./screens/TopRatedScreen.js";
+import HomeScreen from "./screens/HomeScreen";
+import AddArtScreen from "./screens/AddArtScreen";
+import ListScreen from "./screens/ListScreen";
+import MyStreetArtScreen from "./screens/MyStreetArtScreen";
+import MapScreen from "./screens/MapScreen";
+import TopRatedScreen from "./screens/TopRatedScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -52,18 +52,35 @@ export default function Tabs() {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                headerShown: true,
+                headerShown: false,
+
+                // Header
+                headerStyle: {
+                    backgroundColor: "#1E1E1E",
+                },
+
+                headerTitleStyle: {
+                    color: "#F5E6D3",
+                    fontWeight: "700",
+                },
+
+                headerTintColor: "#ff6600",
 
                 headerRight: () => (
                     <TouchableOpacity
                         onPress={() => signOut(auth)}
-                        style={{ marginRight: 15 }}
+                        style={{
+                            marginRight: 15,
+                            backgroundColor: "#ff6600",
+                            paddingHorizontal: 14,
+                            paddingVertical: 8,
+                            borderRadius: 20,
+                        }}
                     >
                         <Text
                             style={{
-                                color: "#ff6600",
+                                color: "#fff",
                                 fontWeight: "bold",
-                                fontSize: 16,
                             }}
                         >
                             Log ud
@@ -71,11 +88,41 @@ export default function Tabs() {
                     </TouchableOpacity>
                 ),
 
+                // Tab bar
                 tabBarActiveTintColor: "#ff6600",
-                tabBarInactiveTintColor: "gray",
+                tabBarInactiveTintColor: "#8E8E8E",
+
                 tabBarStyle: {
-                    height: 60,
-                    paddingBottom: 5,
+                    position: "absolute",
+                    left: 15,
+                    right: 15,
+                    bottom: 15,
+                    height: 75,
+
+                    backgroundColor: "#1E1E1E",
+
+                    borderTopWidth: 0,
+
+                    borderRadius: 25,
+
+                    paddingTop: 8,
+                    paddingBottom: 10,
+
+                    elevation: 12,
+
+                    shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 5,
+                    },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 10,
+                },
+
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                    fontWeight: "600",
+                    marginBottom: 5,
                 },
 
                 tabBarIcon: ({ color, size }) => (
@@ -93,7 +140,9 @@ export default function Tabs() {
                         key={name}
                         name={name}
                         component={component}
-                        options={{ title }}
+                        options={{
+                            title,
+                        }}
                     />
                 )
             )}
