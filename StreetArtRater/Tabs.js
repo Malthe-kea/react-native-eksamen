@@ -43,7 +43,7 @@ const tabConfig = {
     },
     TopRated: {
         component: TopRatedScreen,
-        title: "Top Rated",
+        title: "Top",
         icon: "star",
     },
 };

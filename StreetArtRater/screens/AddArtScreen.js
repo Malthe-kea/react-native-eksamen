@@ -4,23 +4,23 @@ import {
     Text,
     TextInput,
     Image,
-    ScrollView,
     TouchableOpacity,
     StyleSheet,
     Alert,
-    KeyboardAvoidingView,
-    Platform,
     ImageBackground,
 } from "react-native";
 
+import Ionicons from "@expo/vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { db, storage, auth } from "../firebase";
+import { theme, colors } from "../styles/theme";
 
 export default function AddArtScreen({ navigation }) {
     const [image, setImage] = useState(null);
@@ -71,8 +71,8 @@ export default function AddArtScreen({ navigation }) {
         });
     }
 
-    async function uploadImage(PictureToUpload) {
-        const response = await fetch(PictureToUpload);
+    async function uploadImage(uri) {
+        const response = await fetch(uri);
         const blob = await response.blob();
 
         const storageRef = ref(storage, `streetart/${Date.now()}.jpg`);
@@ -117,87 +117,120 @@ export default function AddArtScreen({ navigation }) {
             style={styles.background}
         >
             <View style={styles.overlay}>
-                <KeyboardAvoidingView
-                    style={{ flex: 1 }}
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                <KeyboardAwareScrollView
+                    enableOnAndroid
+                    extraScrollHeight={120}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 150 }}
                 >
-                    <ScrollView>
-                        <Text style={styles.title}>Add Street Art</Text>
+                    <Text style={[theme.title, styles.title]}>
+                        Add Street Art
+                    </Text>
 
-                        <View style={styles.row}>
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={openCamera}
-                            >
-                                <Text>📷 Camera</Text>
-                            </TouchableOpacity>
+                    <View style={styles.row}>
+                        <TouchableOpacity
+                            style={[theme.button, styles.iconButton]}
+                            onPress={openCamera}
+                        >
+                            <Ionicons
+                                name="camera"
+                                size={34}
+                                color={colors.white}
+                            />
+                        </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={pickImage}
-                            >
-                                <Text>🖼 Upload</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity
+                            style={[theme.button, styles.iconButton]}
+                            onPress={pickImage}
+                        >
+                            <Ionicons
+                                name="cloud-upload"
+                                size={34}
+                                color={colors.white}
+                            />
+                        </TouchableOpacity>
+                    </View>
 
-                        {image && (
-                            <Image source={{ uri: image }} style={styles.image} />
+                    {image && (
+                        <Image
+                            source={{ uri: image }}
+                            style={styles.image}
+                        />
+                    )}
+
+                    <TouchableOpacity
+                        style={styles.locationButton}
+                        onPress={useCurrentLocation}
+                    >
+                        <Ionicons
+                            name="location"
+                            size={24}
+                            color={colors.white}
+                        />
+
+                        <Text style={styles.locationText}>
+                            Use current location
+                        </Text>
+                    </TouchableOpacity>
+
+                    <MapView
+                        style={styles.map}
+                        onLongPress={(e) =>
+                            setLocation(e.nativeEvent.coordinate)
+                        }
+                    >
+                        {location && (
+                            <Marker coordinate={location} />
                         )}
+                    </MapView>
 
-                        <TouchableOpacity
-                            style={styles.button}
-                            onPress={useCurrentLocation}
-                        >
-                            <Text>Current location</Text>
-                        </TouchableOpacity>
+                    <TextInput
+                        style={theme.input}
+                        placeholder="Title"
+                        placeholderTextColor={colors.subText}
+                        value={title}
+                        onChangeText={setTitle}
+                    />
 
-                        <MapView
-                            style={styles.map}
-                            onPress={(e) =>
-                                setLocation(e.nativeEvent.coordinate)
-                            }
-                        >
-                            {location && (
-                                <Marker coordinate={location} />
-                            )}
-                        </MapView>
+                    <TextInput
+                        style={[theme.input, styles.description]}
+                        placeholder="Description"
+                        placeholderTextColor={colors.subText}
+                        value={description}
+                        onChangeText={setDescription}
+                        multiline
+                    />
 
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Title"
-                            value={title}
-                            onChangeText={setTitle}
-                        />
+                    <View style={styles.stars}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <TouchableOpacity
+                                key={star}
+                                onPress={() => setRating(star)}
+                            >
+                                <Text style={styles.star}>
+                                    {star <= rating ? "★" : "☆"}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
 
-                        <TextInput
-                            style={[styles.input, styles.description]}
-                            placeholder="Description"
-                            value={description}
-                            onChangeText={setDescription}
-                            multiline
-                        />
-
-                        <View style={styles.stars}>
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <TouchableOpacity
-                                    key={star}
-                                    onPress={() => setRating(star)}
-                                >
-                                    <Text style={styles.star}>
-                                        {star <= rating ? "★" : "☆"}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
+                    <TouchableOpacity
+                        style={theme.button}
+                        onPress={saveArt}
+                    >
+                        <View style={styles.saveContent}>
+                            <Ionicons
+                                name="save"
+                                size={22}
+                                color={colors.white}
+                            />
+                            <Text style={theme.buttonText}>
+                                {" "}Save
+                            </Text>
                         </View>
-
-                        <TouchableOpacity
-                            style={styles.save}
-                            onPress={saveArt}
-                        >
-                            <Text style={styles.saveText}>Save</Text>
-                        </TouchableOpacity>
-                    </ScrollView>
-                </KeyboardAvoidingView>
+                    </TouchableOpacity>
+                </KeyboardAwareScrollView>
             </View>
         </ImageBackground>
     );
@@ -215,45 +248,53 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontSize: 40,
-        fontWeight: "800",
-        color: "#fff",
         marginTop: 50,
-        marginBottom: 30,
+        marginBottom: 25,
     },
 
     row: {
         flexDirection: "row",
-        gap: 10,
+        gap: 15,
+        marginBottom: 20,
     },
 
-    button: {
+    iconButton: {
         flex: 1,
-        backgroundColor: "rgba(255,255,255,0.9)",
-        padding: 16,
-        borderRadius: 18,
+        height: 80,
+        justifyContent: "center",
         alignItems: "center",
-        marginBottom: 15,
+        borderRadius: 25,
     },
 
     image: {
         width: "100%",
         height: 250,
-        borderRadius: 20,
-        marginBottom: 15,
-    },
-
-    map: {
-        height: 240,
-        borderRadius: 20,
+        borderRadius: 25,
         marginBottom: 20,
     },
 
-    input: {
-        backgroundColor: "#fff",
-        padding: 18,
-        borderRadius: 18,
-        marginBottom: 15,
+    locationButton: {
+        backgroundColor: colors.accent,
+        borderRadius: 25,
+        paddingVertical: 20,
+        marginBottom: 20,
+
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    locationText: {
+        color: colors.white,
+        fontSize: 18,
+        fontWeight: "700",
+        marginLeft: 10,
+    },
+
+    map: {
+        height: 180,
+        borderRadius: 25,
+        marginBottom: 20,
     },
 
     description: {
@@ -263,24 +304,18 @@ const styles = StyleSheet.create({
 
     stars: {
         flexDirection: "row",
-        marginBottom: 25,
+        justifyContent: "center",
+        marginVertical: 25,
     },
 
     star: {
-        fontSize: 42,
-        color: "#FFD60A",
+        fontSize: 50,
+        color: colors.star,
     },
 
-    save: {
-        backgroundColor: "#fff",
-        padding: 20,
-        borderRadius: 18,
+    saveContent: {
+        flexDirection: "row",
+        justifyContent: "center",
         alignItems: "center",
-        marginBottom: 50,
-    },
-
-    saveText: {
-        fontSize: 18,
-        fontWeight: "700",
     },
 });
