@@ -12,9 +12,7 @@ import { auth } from "../firebase";
 export default function HomeScreen({ navigation }) {
     return (
         <ImageBackground
-            source={{
-                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmetroselskabet.euwest01.umbraco.io%2Fmedia%2Fvbkn5uue%2Fnordvest-daniel-rasmussen.jpg%3Fwidth%3D1200%26height%3D600&f=1&nofb=1&ipt=23f0cb9aeb45993a140a492a588491fadc0bc750c4bbd641f3c9009827eba359",
-            }}
+            source={require("../static/pics/WP1.png")}
             style={styles.background}
         >
             <View style={styles.overlay}>

@@ -1,6 +1,10 @@
 import React from "react";
+import { TouchableOpacity, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { signOut } from "firebase/auth";
+
+import { auth } from "./firebase";
 
 import HomeScreen from "./screens/HomeScreen.js";
 import AddArtScreen from "./screens/AddArtScreen.js";
@@ -48,13 +52,32 @@ export default function Tabs() {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                headerShown: false,
+                headerShown: true,
+
+                headerRight: () => (
+                    <TouchableOpacity
+                        onPress={() => signOut(auth)}
+                        style={{ marginRight: 15 }}
+                    >
+                        <Text
+                            style={{
+                                color: "#ff6600",
+                                fontWeight: "bold",
+                                fontSize: 16,
+                            }}
+                        >
+                            Log ud
+                        </Text>
+                    </TouchableOpacity>
+                ),
+
                 tabBarActiveTintColor: "#ff6600",
                 tabBarInactiveTintColor: "gray",
                 tabBarStyle: {
                     height: 60,
                     paddingBottom: 5,
                 },
+
                 tabBarIcon: ({ color, size }) => (
                     <Ionicons
                         name={tabConfig[route.name]?.icon || "ellipse"}

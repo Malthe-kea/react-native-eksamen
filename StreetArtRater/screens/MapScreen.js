@@ -65,9 +65,7 @@ export default function MapScreen({ navigation }) {
 
     return (
         <ImageBackground
-            source={{
-                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.istockphoto.com%2Fid%2F2191690740%2Fpt%2Ffoto%2Ffreetown-christiania-copenhagen.jpg%3Fs%3D612x612%26w%3D0%26k%3D20%26c%3DFLB148ntlKrrr0tH3YE8N1FjF_pAXxXJljLW7_j9sxo%3D&f=1&nofb=1&ipt=3cd4780dd9493d1e32879c452d85fd97499cf329347b99d107fca899cf179527",
-            }}
+            source={require("../static/pics/WP1.png")}
             style={styles.background}
         >
             <View style={styles.overlay}>

@@ -35,9 +35,7 @@ export default function SignupScreen({ navigation }) {
 
     return (
         <ImageBackground
-            source={{
-                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fbarbarapicci.files.wordpress.com%2F2022%2F10%2Fstine-hvid-40-copenhagen-denmark.jpg%3Fw%3D1300&f=1&nofb=1&ipt=3db4065a0ae96728da9440e544dddbf04c533c584f78a05ee591e0615191638c",
-            }}
+            source={require("../static/pics/WP1.png")}
             style={styles.background}
         >
             <View style={styles.overlay}>

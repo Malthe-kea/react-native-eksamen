@@ -6,6 +6,7 @@ import {
     FlatList,
     TouchableOpacity,
     StyleSheet,
+    ImageBackground,
 } from "react-native";
 import * as Location from "expo-location";
 import { collection, getDocs } from "firebase/firestore";
@@ -120,20 +121,27 @@ export default function TopRatedScreen({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
+        <ImageBackground
+            source={require("../static/pics/WP1.png")}
+            style={styles.background}
+            resizeMode="cover"
+        >
             <FlatList
                 data={artworks}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
+                contentContainerStyle={styles.container}
             />
-        </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    background: {
         flex: 1,
-        backgroundColor: "#F5F5F5",
+    },
+
+    container: {
         padding: 16,
     },
 
@@ -142,6 +150,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         borderRadius: 20,
         overflow: "hidden",
+
         shadowColor: "#000",
         shadowOffset: {
             width: 0,

@@ -7,7 +7,6 @@ import { auth } from "./firebase";
 
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
-import DetailScreen from "./screens/DetailScreen";
 
 import Tabs from "./Tabs";
 
@@ -38,11 +37,6 @@ export default function App() {
                             component={Tabs}
                         />
 
-                        <Stack.Screen
-                            name="Detail"
-                            component={DetailScreen}
-                            options={{ title: "Details" }}
-                        />
                     </>
                 ) : (
                     <>

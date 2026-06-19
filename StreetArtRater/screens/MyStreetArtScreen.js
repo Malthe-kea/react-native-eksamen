@@ -85,9 +85,7 @@ export default function MyStreetArtScreen({ navigation }) {
 
     return (
         <ImageBackground
-            source={{
-                uri: "https://images.unsplash.com/photo-1547891654-e66ed7ebb968",
-            }}
+            source={require("../static/pics/WP1.png")}
             style={styles.background}
         >
             <View style={styles.overlay}>

@@ -34,9 +34,7 @@ export default function LoginScreen({ navigation }) {
 
     return (
         <ImageBackground
-            source={{
-                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fbarbarapicci.com%2Fwp-content%2Fuploads%2F2020%2F04%2Fdabs-myla-40-copenhagen-denmark.jpg&f=1&nofb=1&ipt=02ec94e89bd582dbeb2024dfb40b8dbc9174b061e26aaca9caae323b2b29248a",
-            }}
+            source={require("../static/pics/WP1.png")}
             style={styles.background}
         >
             <View style={styles.overlay}>
