@@ -107,7 +107,6 @@ export default function AddArtScreen({ navigation }) {
                 createdAt: new Date(),
             });
 
-            // Ryd formularen
             setImage(null);
             setLocation(null);
             setTitle("");

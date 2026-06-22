@@ -26,36 +26,26 @@ export default function App() {
         return unsubscribe;
     }, []);
 
-    if (loading) return null;
+    if (loading) {
+        return null;
+    }
+
+    if (user) {
+        return (
+            <NavigationContainer>
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Tabs" component={Tabs}/>
+                    <Stack.Screen name="Detail" component={DetailScreen}/>
+                </Stack.Navigator>
+            </NavigationContainer>
+        );
+    }
 
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {user ? (
-                    <>
-                        <Stack.Screen
-                            name="Tabs"
-                            component={Tabs}
-                        />
-
-                        <Stack.Screen
-                            name="Detail"
-                            component={DetailScreen}
-                        />
-                    </>
-                ) : (
-                    <>
-                        <Stack.Screen
-                            name="Login"
-                            component={LoginScreen}
-                        />
-
-                        <Stack.Screen
-                            name="Signup"
-                            component={SignupScreen}
-                        />
-                    </>
-                )}
+                <Stack.Screen name="Login" component={LoginScreen}/>
+                <Stack.Screen name="Signup" component={SignupScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

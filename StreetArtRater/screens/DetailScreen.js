@@ -25,7 +25,6 @@ export default function DetailScreen({ route, navigation }) {
 
     async function deleteArt() {
         try {
-            // Tjek om den indloggede bruger er den, der oprettede billedet
             if (auth.currentUser?.email !== art.createdBy) {
                 Alert.alert(
                     "Ingen adgang",
@@ -117,7 +116,7 @@ export default function DetailScreen({ route, navigation }) {
                         </MapView>
                     </View>
 
-                    {/* Vis kun slet-knappen for ejeren */}
+                    {}
                     {auth.currentUser?.email === art.createdBy && (
                         <TouchableOpacity
                             style={localStyles.deleteButton}
