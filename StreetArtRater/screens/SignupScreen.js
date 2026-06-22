@@ -13,6 +13,7 @@ import {
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import { colors } from "../styles/styles";
 
 export default function SignupScreen({ navigation }) {
     const [email, setEmail] = useState("");
@@ -36,52 +37,52 @@ export default function SignupScreen({ navigation }) {
     return (
         <ImageBackground
             source={require("../static/pics/WP1.png")}
-            style={styles.background}
+            style={localStyles.background}
         >
-            <View style={styles.overlay}>
+            <View style={localStyles.overlay}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                 >
-                    <Text style={styles.title}>
+                    <Text style={localStyles.title}>
                         Create account
                     </Text>
 
-                    <Text style={styles.subtitle}>
+                    <Text style={localStyles.subtitle}>
                         Join the StreetArt community
                     </Text>
 
                     <TextInput
-                        style={styles.input}
+                        style={localStyles.input}
                         placeholder="Email"
-                        placeholderTextColor="#bbb"
+                        placeholderTextColor={colors.subText}
                         value={email}
                         onChangeText={setEmail}
                         autoCapitalize="none"
                     />
 
                     <TextInput
-                        style={styles.input}
+                        style={localStyles.input}
                         placeholder="Password"
-                        placeholderTextColor="#bbb"
+                        placeholderTextColor={colors.subText}
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
                     />
 
                     <TouchableOpacity
-                        style={styles.button}
+                        style={localStyles.button}
                         onPress={signup}
                     >
-                        <Text style={styles.buttonText}>
+                        <Text style={localStyles.buttonText}>
                             Create account
                         </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={styles.secondary}
+                        style={localStyles.secondary}
                         onPress={() => navigation.goBack()}
                     >
-                        <Text style={styles.secondaryText}>
+                        <Text style={localStyles.secondaryText}>
                             Already have an account?
                         </Text>
                     </TouchableOpacity>
@@ -91,7 +92,7 @@ export default function SignupScreen({ navigation }) {
     );
 }
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
     background: {
         flex: 1,
     },
@@ -100,41 +101,57 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         padding: 30,
-        backgroundColor: "rgba(0,0,0,0.45)",
+        backgroundColor: "rgba(0,0,0,0.55)",
     },
 
     title: {
         fontSize: 42,
         fontWeight: "800",
-        color: "#fff",
+        color: colors.text,
         marginBottom: 8,
+
+        textShadowColor: "rgba(0,0,0,0.8)",
+        textShadowOffset: {
+            width: 1,
+            height: 1,
+        },
     },
 
     subtitle: {
         fontSize: 18,
-        color: "#ddd",
+        color: colors.subText,
         marginBottom: 40,
     },
 
     input: {
-        backgroundColor: "rgba(255,255,255,0.15)",
+        backgroundColor: "rgba(42,42,42,0.9)",
+        color: colors.text,
         padding: 18,
-        borderRadius: 16,
+        borderRadius: 18,
         marginBottom: 15,
-        color: "#fff",
         borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.2)",
+        borderColor: colors.border,
     },
 
     button: {
-        backgroundColor: "#fff",
+        backgroundColor: colors.accent,
         padding: 18,
-        borderRadius: 18,
+        borderRadius: 20,
         alignItems: "center",
         marginTop: 10,
+
+        shadowColor: colors.black,
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 6,
     },
 
     buttonText: {
+        color: colors.white,
         fontSize: 18,
         fontWeight: "700",
     },
@@ -145,7 +162,7 @@ const styles = StyleSheet.create({
     },
 
     secondaryText: {
-        color: "#fff",
+        color: colors.text,
         fontSize: 16,
     },
 });

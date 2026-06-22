@@ -54,39 +54,7 @@ export default function Tabs() {
             screenOptions={({ route }) => ({
                 headerShown: false,
 
-                // Header
-                headerStyle: {
-                    backgroundColor: "#1E1E1E",
-                },
 
-                headerTitleStyle: {
-                    color: "#F5E6D3",
-                    fontWeight: "700",
-                },
-
-                headerTintColor: "#ff6600",
-
-                headerRight: () => (
-                    <TouchableOpacity
-                        onPress={() => signOut(auth)}
-                        style={{
-                            marginRight: 15,
-                            backgroundColor: "#ff6600",
-                            paddingHorizontal: 14,
-                            paddingVertical: 8,
-                            borderRadius: 20,
-                        }}
-                    >
-                        <Text
-                            style={{
-                                color: "#fff",
-                                fontWeight: "bold",
-                            }}
-                        >
-                            Log ud
-                        </Text>
-                    </TouchableOpacity>
-                ),
 
                 // Tab bar
                 tabBarActiveTintColor: "#ff6600",
@@ -96,17 +64,14 @@ export default function Tabs() {
                     position: "absolute",
                     left: 15,
                     right: 15,
-                    bottom: 15,
                     height: 75,
 
                     backgroundColor: "#1E1E1E",
 
                     borderTopWidth: 0,
 
-                    borderRadius: 25,
 
                     paddingTop: 8,
-                    paddingBottom: 10,
 
                     elevation: 12,
 

@@ -45,6 +45,9 @@ export default function TopRatedScreen({ navigation }) {
                 id: doc.id,
                 ...art,
                 distance: dist,
+                randomHeight: [180, 220, 260, 320][
+                    Math.floor(Math.random() * 4)
+                    ],
             };
         });
 
@@ -84,14 +87,16 @@ export default function TopRatedScreen({ navigation }) {
 
     function stars(rating) {
         const value = Math.round(rating || 0);
-
         return "★".repeat(value) + "☆".repeat(5 - value);
     }
 
     function renderItem({ item }) {
         return (
             <TouchableOpacity
-                style={styles.card}
+                style={[
+                    styles.card,
+                    { height: item.randomHeight }
+                ]}
                 onPress={() =>
                     navigation.navigate("Detail", {
                         art: item,
@@ -103,8 +108,11 @@ export default function TopRatedScreen({ navigation }) {
                     style={styles.image}
                 />
 
-                <View style={styles.content}>
-                    <Text style={styles.title}>
+                <View style={styles.infoOverlay}>
+                    <Text
+                        style={styles.title}
+                        numberOfLines={1}
+                    >
                         {item.title}
                     </Text>
 
@@ -113,7 +121,7 @@ export default function TopRatedScreen({ navigation }) {
                     </Text>
 
                     <Text style={styles.distance}>
-                        {item.distance.toFixed(1)} km væk
+                        📍 {item.distance.toFixed(1)} km væk
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -126,12 +134,17 @@ export default function TopRatedScreen({ navigation }) {
             style={styles.background}
             resizeMode="cover"
         >
-            <FlatList
-                data={artworks}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItem}
-                contentContainerStyle={styles.container}
-            />
+            <View style={styles.overlay}>
+                <FlatList
+                    data={artworks}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderItem}
+                    numColumns={2}
+                    columnWrapperStyle={styles.row}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.list}
+                />
+            </View>
         </ImageBackground>
     );
 }
@@ -141,48 +154,55 @@ const styles = StyleSheet.create({
         flex: 1,
     },
 
-    container: {
-        padding: 16,
+    overlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.2)",
+    },
+
+    list: {
+        paddingBottom: 120,
+    },
+
+    row: {
+        gap: 2,
     },
 
     card: {
-        backgroundColor: "#fff",
-        marginBottom: 20,
-        borderRadius: 20,
-        overflow: "hidden",
-
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.08,
-        shadowRadius: 10,
-        elevation: 4,
+        flex: 1,
+        marginBottom: 2,
+        position: "relative",
     },
 
     image: {
         width: "100%",
-        height: 220,
+        height: "100%",
     },
 
-    content: {
-        padding: 16,
+    infoOverlay: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "rgba(0,0,0,0.45)",
+        paddingHorizontal: 10,
+        paddingVertical: 8,
     },
 
     title: {
-        fontSize: 22,
+        color: "#fff",
+        fontSize: 13,
         fontWeight: "700",
-        marginBottom: 8,
+        marginBottom: 2,
     },
 
     rating: {
-        fontSize: 22,
-        marginBottom: 8,
+        color: "#FFD700",
+        fontSize: 12,
+        marginBottom: 2,
     },
 
     distance: {
-        fontSize: 16,
-        color: "#666",
+        color: "#fff",
+        fontSize: 11,
     },
 });

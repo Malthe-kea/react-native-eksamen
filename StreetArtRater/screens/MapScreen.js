@@ -7,15 +7,15 @@ import {
     ImageBackground,
     Image,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
+import { colors } from "../styles/styles";
 
 export default function MapScreen({ navigation }) {
     const [artworks, setArtworks] = useState([]);
     const [region, setRegion] = useState(null);
-    const [selectedArt, setSelectedArt] = useState(null);
 
     useEffect(() => {
         loadLocation();
@@ -54,23 +54,14 @@ export default function MapScreen({ navigation }) {
         });
     }
 
-    function stars(rating) {
-        const value = Math.round(rating || 0);
-
-        return (
-            "★".repeat(value) +
-            "☆".repeat(5 - value)
-        );
-    }
-
     return (
         <ImageBackground
             source={require("../static/pics/WP1.png")}
-            style={styles.background}
+            style={localStyles.background}
         >
-            <View style={styles.overlay}>
+            <View style={localStyles.overlay}>
                 <MapView
-                    style={styles.map}
+                    style={localStyles.map}
                     region={
                         region || {
                             latitude: 55.6761,
@@ -87,114 +78,85 @@ export default function MapScreen({ navigation }) {
                                 latitude: art.latitude,
                                 longitude: art.longitude,
                             }}
-                            onPress={() => setSelectedArt(art)}
-                        />
+                        >
+                            <Callout
+                                tooltip
+                                onPress={() =>
+                                    navigation.navigate("Detail", {
+                                        art,
+                                    })
+                                }
+                            >
+                                <TouchableOpacity
+                                    style={localStyles.callout}
+                                    activeOpacity={0.9}
+                                >
+                                    <Image
+                                        source={{ uri: art.imageUrl }}
+                                        style={localStyles.calloutImage}
+                                    />
+
+                                    <Text
+                                        numberOfLines={1}
+                                        style={localStyles.calloutTitle}
+                                    >
+                                        {art.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            </Callout>
+                        </Marker>
                     ))}
                 </MapView>
-
-                {selectedArt && (
-                    <TouchableOpacity
-                        style={styles.card}
-                        onPress={() =>
-                            navigation.navigate("Detail", {
-                                art: selectedArt,
-                            })
-                        }
-                    >
-                        <Image
-                            source={{
-                                uri: selectedArt.imageUrl,
-                            }}
-                            style={styles.image}
-                        />
-
-                        <View style={styles.content}>
-                            <Text style={styles.title}>
-                                {selectedArt.title}
-                            </Text>
-
-                            <Text style={styles.rating}>
-                                {stars(selectedArt.averageRating)}
-                            </Text>
-
-                            <Text
-                                numberOfLines={2}
-                                style={styles.description}
-                            >
-                                {selectedArt.description}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                )}
             </View>
         </ImageBackground>
     );
 }
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
     background: {
         flex: 1,
     },
 
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.35)",
-    },
-
-    header: {
-        fontSize: 38,
-        fontWeight: "800",
-        color: "#fff",
-        marginTop: 60,
-        marginBottom: 20,
-        paddingHorizontal: 20,
+        backgroundColor: "rgba(0,0,0,0.25)",
     },
 
     map: {
-        height: 340,
-        marginHorizontal: 20,
-        borderRadius: 24,
-        overflow: "hidden",
-        marginTop: 40,
+        flex: 1,
     },
 
-    card: {
-        backgroundColor: "#fff",
-        margin: 20,
-        borderRadius: 24,
+    callout: {
+        width: 160,
+        backgroundColor: colors.surface,
+        borderRadius: 18,
         overflow: "hidden",
-        shadowColor: "#000",
+
+        shadowColor: colors.black,
         shadowOffset: {
             width: 0,
             height: 4,
         },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 5,
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 6,
     },
 
-    image: {
+    calloutImage: {
         width: "100%",
-        height: 220,
+        height: 100,
     },
 
-    content: {
-        padding: 18,
-    },
-
-    title: {
-        fontSize: 24,
+    calloutTitle: {
+        color: colors.text,
+        fontSize: 14,
         fontWeight: "700",
-        marginBottom: 8,
-    },
+        padding: 10,
 
-    rating: {
-        fontSize: 20,
-        marginBottom: 8,
-    },
-
-    description: {
-        fontSize: 16,
-        color: "#666",
+        textShadowColor: "rgba(0,0,0,0.8)",
+        textShadowOffset: {
+            width: 1,
+            height: 1,
+        },
     },
 });

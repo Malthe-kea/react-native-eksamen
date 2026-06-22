@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 
 import { db, auth } from "../firebase";
+import { colors } from "../styles/styles";
 
 export default function MyStreetArtScreen({ navigation }) {
     const [artworks, setArtworks] = useState([]);
@@ -28,30 +29,25 @@ export default function MyStreetArtScreen({ navigation }) {
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            setArtworks(
-                snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }))
-            );
+            const data = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+                randomHeight: [180, 220, 260, 320][Math.floor(Math.random() * 4)],
+            }));
+
+            setArtworks(data);
         });
 
         return unsubscribe;
     }, []);
 
-    function stars(rating) {
-        const value = Math.round(rating || 0);
-
-        return (
-            "★".repeat(value) +
-            "☆".repeat(5 - value)
-        );
-    }
-
     function renderItem({ item }) {
         return (
             <TouchableOpacity
-                style={styles.card}
+                style={[
+                    localStyles.card,
+                    { height: item.randomHeight }
+                ]}
                 onPress={() =>
                     navigation.navigate("Detail", {
                         art: item,
@@ -60,23 +56,15 @@ export default function MyStreetArtScreen({ navigation }) {
             >
                 <Image
                     source={{ uri: item.imageUrl }}
-                    style={styles.image}
+                    style={localStyles.image}
                 />
 
-                <View style={styles.content}>
-                    <Text style={styles.title}>
-                        {item.title}
-                    </Text>
-
-                    <Text style={styles.rating}>
-                        {stars(item.averageRating)}
-                    </Text>
-
+                <View style={localStyles.titleOverlay}>
                     <Text
-                        style={styles.description}
-                        numberOfLines={2}
+                        style={localStyles.title}
+                        numberOfLines={1}
                     >
-                        {item.description}
+                        {item.title}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -86,20 +74,20 @@ export default function MyStreetArtScreen({ navigation }) {
     return (
         <ImageBackground
             source={require("../static/pics/WP1.png")}
-            style={styles.background}
+            style={localStyles.background}
         >
-            <View style={styles.overlay}>
-                <Text style={styles.header}>
+            <View style={localStyles.overlay}>
+                <Text style={localStyles.header}>
                     My Street Art
                 </Text>
 
                 {artworks.length === 0 ? (
-                    <View style={styles.empty}>
-                        <Text style={styles.emptyTitle}>
+                    <View style={localStyles.empty}>
+                        <Text style={localStyles.emptyTitle}>
                             No uploads yet
                         </Text>
 
-                        <Text style={styles.emptyText}>
+                        <Text style={localStyles.emptyText}>
                             Upload your first artwork
                         </Text>
                     </View>
@@ -108,7 +96,10 @@ export default function MyStreetArtScreen({ navigation }) {
                         data={artworks}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id}
+                        numColumns={2}
+                        columnWrapperStyle={localStyles.row}
                         showsVerticalScrollIndicator={false}
+                        contentContainerStyle={localStyles.list}
                     />
                 )}
             </View>
@@ -116,86 +107,87 @@ export default function MyStreetArtScreen({ navigation }) {
     );
 }
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
     background: {
         flex: 1,
     },
 
     overlay: {
         flex: 1,
+        backgroundColor: "rgba(0,0,0,0.25)",
         paddingTop: 60,
-        backgroundColor: "rgba(0,0,0,0.35)",
     },
 
     header: {
         fontSize: 38,
         fontWeight: "800",
-        color: "#fff",
+        color: colors.text,
         paddingHorizontal: 20,
         marginBottom: 20,
+
+        textShadowColor: "rgba(0,0,0,0.8)",
+        textShadowOffset: {
+            width: 1,
+            height: 1,
+        },
+    },
+
+    list: {
+        paddingBottom: 120,
+    },
+
+    row: {
+        gap: 2,
     },
 
     card: {
-        backgroundColor: "#fff",
-        marginHorizontal: 20,
-        marginBottom: 20,
-        borderRadius: 22,
-        overflow: "hidden",
-
-        shadowColor: "#000",
-
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-
-        shadowOpacity: 0.12,
-        shadowRadius: 10,
-
-        elevation: 5,
+        flex: 1,
+        marginBottom: 2,
+        position: "relative",
     },
 
     image: {
         width: "100%",
-        height: 240,
+        height: "100%",
     },
 
-    content: {
-        padding: 18,
+    titleOverlay: {
+        position: "absolute",
+        top: 8,
+        left: 8,
+        backgroundColor: "rgba(0,0,0,0.45)",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
     },
 
     title: {
-        fontSize: 24,
-        fontWeight: "700",
-        marginBottom: 8,
-    },
-
-    rating: {
-        fontSize: 22,
-        marginBottom: 10,
-    },
-
-    description: {
-        fontSize: 16,
-        color: "#666",
-        lineHeight: 24,
+        color: colors.white,
+        fontSize: 12,
+        fontWeight: "600",
     },
 
     empty: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        paddingHorizontal: 40,
     },
 
     emptyTitle: {
         fontSize: 30,
         fontWeight: "700",
-        color: "#fff",
+        color: colors.text,
         marginBottom: 10,
+
+        textShadowColor: "rgba(0,0,0,0.8)",
+        textShadowOffset: {
+            width: 1,
+            height: 1,
+        },
     },
 
     emptyText: {
         fontSize: 18,
-        color: "#ddd",
+        color: colors.subText,
     },
 });

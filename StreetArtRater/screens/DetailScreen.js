@@ -7,21 +7,33 @@ import {
     StyleSheet,
     Alert,
     TouchableOpacity,
+    ImageBackground,
 } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import { doc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase";
+
+import { db, auth } from "../firebase";
+import { styles, colors } from "../styles/styles";
 
 export default function DetailScreen({ route, navigation }) {
     const { art } = route.params;
 
     function stars(rating) {
         const rounded = Math.round(rating || 0);
-
         return "★".repeat(rounded) + "☆".repeat(5 - rounded);
     }
 
     async function deleteArt() {
         try {
+            // Tjek om den indloggede bruger er den, der oprettede billedet
+            if (auth.currentUser?.email !== art.createdBy) {
+                Alert.alert(
+                    "Ingen adgang",
+                    "Du kan kun slette dine egne billeder."
+                );
+                return;
+            }
+
             await deleteDoc(doc(db, "streetart", art.id));
 
             Alert.alert(
@@ -29,80 +41,106 @@ export default function DetailScreen({ route, navigation }) {
                 "Street art deleted successfully"
             );
 
-            navigation.navigate("Home");
+            navigation.goBack();
         } catch (error) {
             Alert.alert("Error", error.message);
         }
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <Image
-                source={{ uri: art.imageUrl }}
-                style={styles.image}
-            />
+        <ImageBackground
+            source={require("../static/pics/WP1.png")}
+            style={localStyles.background}
+        >
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={localStyles.scrollContent}
+            >
+                <Image
+                    source={{ uri: art.imageUrl }}
+                    style={localStyles.image}
+                />
 
-            <View style={styles.content}>
-                <Text style={styles.title}>
-                    {art.title}
-                </Text>
-
-                <Text style={styles.rating}>
-                    {stars(art.averageRating)}{" "}
-                    {(art.averageRating || 0).toFixed(1)}/5
-                </Text>
-
-                <View style={styles.card}>
-                    <Text style={styles.heading}>
-                        Description
+                <View style={localStyles.content}>
+                    <Text style={styles.title}>
+                        {art.title}
                     </Text>
 
-                    <Text style={styles.text}>
-                        {art.description}
+                    <Text style={localStyles.rating}>
+                        {stars(art.averageRating)}{" "}
+                        {(art.averageRating || 0).toFixed(1)}/5
                     </Text>
+
+                    <View style={styles.card}>
+                        <Text style={localStyles.heading}>
+                            Description
+                        </Text>
+
+                        <Text style={styles.text}>
+                            {art.description}
+                        </Text>
+                    </View>
+
+                    <View style={styles.card}>
+                        <Text style={localStyles.heading}>
+                            Added by
+                        </Text>
+
+                        <Text style={styles.text}>
+                            {art.createdBy || "Unknown"}
+                        </Text>
+                    </View>
+
+                    <View style={styles.card}>
+                        <Text style={localStyles.heading}>
+                            Location
+                        </Text>
+
+                        <MapView
+                            style={localStyles.map}
+                            initialRegion={{
+                                latitude: art.latitude,
+                                longitude: art.longitude,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01,
+                            }}
+                            scrollEnabled={false}
+                            zoomEnabled={false}
+                        >
+                            <Marker
+                                coordinate={{
+                                    latitude: art.latitude,
+                                    longitude: art.longitude,
+                                }}
+                                title={art.title}
+                            />
+                        </MapView>
+                    </View>
+
+                    {/* Vis kun slet-knappen for ejeren */}
+                    {auth.currentUser?.email === art.createdBy && (
+                        <TouchableOpacity
+                            style={localStyles.deleteButton}
+                            onPress={deleteArt}
+                        >
+                            <Text style={styles.buttonText}>
+                                Delete Art
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.heading}>
-                        Added by
-                    </Text>
-
-                    <Text style={styles.text}>
-                        {art.createdBy || "Unknown"}
-                    </Text>
-                </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.heading}>
-                        Location
-                    </Text>
-
-                    <Text style={styles.text}>
-                        Latitude: {art.latitude}
-                    </Text>
-
-                    <Text style={styles.text}>
-                        Longitude: {art.longitude}
-                    </Text>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={deleteArt}
-                >
-                    <Text style={styles.deleteText}>
-                        Delete art
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </ImageBackground>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
+const localStyles = StyleSheet.create({
+    background: {
         flex: 1,
-        backgroundColor: "#F5F5F5",
+    },
+
+    scrollContent: {
+        paddingBottom: 120,
     },
 
     image: {
@@ -114,55 +152,30 @@ const styles = StyleSheet.create({
         padding: 20,
     },
 
-    title: {
-        fontSize: 30,
-        fontWeight: "700",
-        marginBottom: 10,
-    },
-
     rating: {
-        fontSize: 24,
-        marginBottom: 20,
-    },
-
-    card: {
-        backgroundColor: "#fff",
-        borderRadius: 18,
-        padding: 18,
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.08,
-        shadowRadius: 10,
-        elevation: 3,
+        fontSize: 26,
+        color: colors.star,
+        marginBottom: 25,
     },
 
     heading: {
         fontSize: 18,
         fontWeight: "700",
-        marginBottom: 10,
+        color: colors.text,
+        marginBottom: 12,
     },
 
-    text: {
-        fontSize: 16,
-        color: "#555",
-        lineHeight: 24,
+    map: {
+        height: 220,
+        borderRadius: 20,
+        overflow: "hidden",
     },
 
     deleteButton: {
         backgroundColor: "#D62828",
         padding: 18,
-        borderRadius: 16,
+        borderRadius: 20,
         alignItems: "center",
         marginTop: 10,
-    },
-
-    deleteText: {
-        color: "#fff",
-        fontWeight: "700",
-        fontSize: 18,
     },
 });
