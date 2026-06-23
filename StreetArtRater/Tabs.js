@@ -1,10 +1,7 @@
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { signOut } from "firebase/auth";
 
-import { auth } from "./firebase";
 
 import HomeScreen from "./screens/HomeScreen";
 import AddArtScreen from "./screens/AddArtScreen";
@@ -54,9 +51,6 @@ export default function Tabs() {
             screenOptions={({ route }) => ({
                 headerShown: false,
 
-
-
-                // Tab bar
                 tabBarActiveTintColor: "#ff6600",
                 tabBarInactiveTintColor: "#8E8E8E",
 

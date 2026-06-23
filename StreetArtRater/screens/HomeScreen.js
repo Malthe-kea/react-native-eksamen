@@ -32,9 +32,7 @@ export default function HomeScreen({ navigation }) {
                 }
 
                 const location = await Location.getCurrentPositionAsync({});
-
                 const { latitude, longitude } = location.coords;
-
                 const response = await fetch(
                     `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m`
                 );
@@ -72,11 +70,11 @@ export default function HomeScreen({ navigation }) {
                 </Text>
 
                 <Text style={[localStyles.subText, localStyles.homeScreenSubtitle]}>
-                    Entirely community driven
+                    from around the world
                 </Text>
 
                 <Text style={[localStyles.subText, localStyles.homeScreenSubtitle]}>
-                    from around the world
+                    - Entirely community driven
                 </Text>
 
                 {temperature !== null && (
